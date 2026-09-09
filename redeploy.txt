@@ -1,0 +1,1 @@
+Force Vercel redeploy for portrait asset fix — 2026-09-09 15:36 CAT
