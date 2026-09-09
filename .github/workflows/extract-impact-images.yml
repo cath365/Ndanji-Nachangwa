@@ -1,0 +1,52 @@
+name: Extract impact images
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decode embedded artwork to JPEG files
+        shell: python
+        run: |
+          from pathlib import Path
+          import base64, re
+
+          files = {
+              'assets/technovation-girls-art.svg': 'assets/technovation-girls.jpg',
+              'assets/stem-a-girl-art.svg': 'assets/stem-a-girl.jpg',
+              'assets/remp-scratch-art.svg': 'assets/remp.jpg',
+          }
+
+          marker = 'base64,'
+          for src, dst in files.items():
+              text = Path(src).read_text(encoding='utf-8', errors='ignore')
+              if marker not in text:
+                  raise RuntimeError(f'No embedded base64 image found in {src}')
+              payload = text.split(marker, 1)[1]
+              payload = payload.rsplit('"', 1)[0]
+              payload = re.sub(r'[^A-Za-z0-9+/=]', '', payload)
+              payload += '=' * ((4 - len(payload) % 4) % 4)
+              data = base64.b64decode(payload, validate=False)
+              if not data.startswith(b'\xff\xd8'):
+                  raise RuntimeError(f'{src} did not decode to a JPEG')
+              Path(dst).write_bytes(data)
+              print(dst, len(data), 'bytes')
+      - name: Commit extracted images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/technovation-girls.jpg assets/stem-a-girl.jpg assets/remp.jpg
+          if git diff --cached --quiet; then
+            echo "No image changes"
+          else
+            git commit -m "Add browser-safe impact JPEG assets [skip ci]"
+            git push
+          fi
