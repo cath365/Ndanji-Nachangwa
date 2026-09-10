@@ -1,0 +1,1 @@
+Crisp scalable SVG impact artwork prepared on the image-quality-fix-2 branch before switching live pages.
