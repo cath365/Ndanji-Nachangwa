@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "updatedAt": null,
+  "pages": {
+    "/": {"text": {}, "images": {}, "links": {}},
+    "/about.html": {"text": {}, "images": {}, "links": {}},
+    "/experience.html": {"text": {}, "images": {}, "links": {}},
+    "/impact.html": {"text": {}, "images": {}, "links": {}},
+    "/insights.html": {"text": {}, "images": {}, "links": {}},
+    "/education.html": {"text": {}, "images": {}, "links": {}},
+    "/contact.html": {"text": {}, "images": {}, "links": {}}
+  }
+}
