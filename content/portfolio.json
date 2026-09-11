@@ -1,0 +1,74 @@
+{
+  "profile": {
+    "name": "Ndanji Nachangwa",
+    "title": "Aeronautical Engineer · Head of Innovation",
+    "role": "Head of Innovation @ Robotix Institute ZM",
+    "location": "Lusaka Province, Zambia",
+    "tagline": "Engineering ideas into impact through STEM, innovation and education.",
+    "bio": "Aeronautical Engineer, innovation leader and STEM education advocate based in Lusaka Province, Zambia. Her work connects engineering, technology, education, fundraising, communication and people-centred innovation.",
+    "quote": "Building opportunities through engineering, innovation and education.",
+    "profileImage": "/ndanji-profile.jpg",
+    "linkedin": "https://zm.linkedin.com/in/ndanji-nachangwa-59468321a"
+  },
+  "home": {
+    "eyebrow": "Innovation • Engineering • STEM",
+    "headline": "Engineering ideas into impact.",
+    "intro": "Building at the intersection of engineering, innovation, STEM education and community impact.",
+    "aboutTitle": "Engineering with purpose.",
+    "aboutText": "Ndanji works at the intersection of engineering, technology, education and social impact. Her focus is on turning ideas into practical initiatives, creating opportunities for young people and supporting stronger participation in STEM.",
+    "impactTitle": "Featured Impact",
+    "insightTitle": "Featured Insight",
+    "contactTitle": "Let's Build Meaningful Impact."
+  },
+  "about": {
+    "headline": "Engineer. Innovator. STEM advocate.",
+    "summary": "My work connects engineering, innovation and education with opportunities that help young people build, experiment and lead.",
+    "secondary": "My professional path brings together innovation leadership, project development, digital communication, fundraising and an aeronautical engineering foundation.",
+    "expertise": [
+      "Innovation leadership",
+      "Aeronautical engineering",
+      "STEM education",
+      "Robotics & prototyping",
+      "Project development",
+      "Grants & fundraising",
+      "Digital communications"
+    ]
+  },
+  "experience": [
+    {"role":"Head of Innovation","organization":"Robotix Institute ZM","period":"2024 – Present","description":"Innovation leadership supporting robotics, STEM, technology and institutional initiatives."},
+    {"role":"Senior Grants & Fundraising Coordinator","organization":"LauncHER Engineer’s Hub","period":"2025 – Present","description":"Supporting fundraising, resource mobilisation, partnerships and strategic coordination for impact-focused work."},
+    {"role":"Social Media & Digital Communications","organization":"Professional / Project Work","period":"2024 – 2025","description":"Managing digital communication and content to strengthen visibility, outreach and engagement."},
+    {"role":"Creative Director","organization":"Project Work","period":"","description":"Supporting creative direction, communication and programme storytelling."},
+    {"role":"Project Coordinator","organization":"STEM & Innovation Initiatives","period":"","description":"Coordinating practical programmes, learners, partners and delivery activities."}
+  ],
+  "impact": [
+    {"title":"Northmead Primary School STEAM Project","category":"Project Leadership","description":"Project leadership for 40 Grade 6 learners who developed five functional STEAM prototypes including robotics, automation and smart-system projects.","image":""},
+    {"title":"Technovation Girls","category":"Coaching & Mentorship","description":"Volunteer coaching supporting young women in technology and entrepreneurship. A senior team progressed to the Global Semifinals.","image":"/assets/technovation-girls-art.svg"},
+    {"title":"STEM-A-Girl Robotics Outreach","category":"STEM Outreach","description":"Hands-on STEM and robotics outreach designed to build confidence, practical skills and participation for girls in technology.","image":"/assets/stem-a-girl-art.svg"},
+    {"title":"REMP 55 Days Across Zambia","category":"Field Experience","description":"55 days of field work supporting the Rural Electrification Master Plan upgrade and learning directly from communities across Zambia.","image":"/assets/remp-scratch-art.svg"},
+    {"title":"Techtrends Zambia 2024 Tech Expo","category":"Public Engagement","description":"Volunteering and public engagement focused on people-centred innovation, collaboration and digital transformation.","image":""}
+  ],
+  "insights": [
+    {"title":"STEM is Pink: Reimagining STEM Beyond Stereotypes","url":"https://www.linkedin.com/pulse/stem-pink-reimagining-beyond-stereotypes-ndanji-nachangwa-3jprf","summary":"A reflection on representation, participation and changing the way girls and women see themselves in STEM.","image":"https://media.licdn.com/dms/image/v2/D4D12AQFxW60bwGOb3Q/article-cover_image-shrink_600_2000/B4DZnDvCFzJMAQ-/0/1759925511452?e=2147483647&t=s6pLCq2AowTp6JvJKt1Q5u3ooXkq_HdEm7ueztUHj-8&v=beta"}
+  ],
+  "education": [
+    {"institution":"Copperbelt University","qualification":"Aeronautical Engineering","period":"2018 – 2023"},
+    {"institution":"Ndola Girls National Technical School","qualification":"Technical Secondary Education","period":"2014 – 2016"}
+  ],
+  "certifications": [
+    {"name":"AI in Leadership","issuer":"Teresa Heart Foundation","year":"2024"},
+    {"name":"Digital Marketing for Entrepreneurs","issuer":"YALI","year":"2023"}
+  ],
+  "contact": {
+    "headline":"Let’s build something meaningful.",
+    "text":"Open to conversations around engineering, innovation, STEM education, partnerships and public-interest technology.",
+    "location":"Lusaka Province, Zambia",
+    "linkedin":"https://zm.linkedin.com/in/ndanji-nachangwa-59468321a"
+  },
+  "stats": [
+    {"value":"40","label":"Grade 6 learners"},
+    {"value":"5","label":"STEAM prototypes"},
+    {"value":"15","label":"Technovation participants"},
+    {"value":"55","label":"Days of REMP field work"}
+  ]
+}
