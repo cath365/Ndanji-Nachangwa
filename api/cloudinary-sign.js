@@ -1,9 +1,11 @@
 import crypto from 'node:crypto';
 import { isAdminRequest } from './_admin-session.js';
 
-const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || 'dwka1eckr';
-const API_KEY = process.env.CLOUDINARY_API_KEY;
-const API_SECRET = process.env.CLOUDINARY_API_SECRET;
+// Trim environment values so accidental spaces/newlines copied into Vercel
+// do not produce invalid Cloudinary signatures.
+const CLOUD_NAME = (process.env.CLOUDINARY_CLOUD_NAME || '').trim();
+const API_KEY = (process.env.CLOUDINARY_API_KEY || '').trim();
+const API_SECRET = (process.env.CLOUDINARY_API_SECRET || '').trim();
 const FOLDER = 'ndanji-portfolio';
 
 export default async function handler(req, res) {
@@ -16,8 +18,15 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  if (!API_KEY || !API_SECRET) {
-    return res.status(500).json({ error: 'Cloudinary environment variables are not configured.' });
+  if (!CLOUD_NAME || !API_KEY || !API_SECRET) {
+    return res.status(500).json({
+      error: 'Cloudinary environment variables are not configured.',
+      missing: {
+        cloudName: !CLOUD_NAME,
+        apiKey: !API_KEY,
+        apiSecret: !API_SECRET
+      }
+    });
   }
 
   const timestamp = Math.floor(Date.now() / 1000);
