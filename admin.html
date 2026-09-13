@@ -16,8 +16,9 @@
     <div class="eyebrow">Private administration</div>
     <div class="brand">Ndanji Nachangwa</div>
     <h2 style="margin-top:18px">Portfolio CMS</h2>
-    <p class="small">Sign in to edit portfolio text, links and images. Changes are saved to the website repository and redeployed by Vercel.</p>
-    <div class="field"><label for="password">Admin password</label><input id="password" type="password" autocomplete="current-password" required></div>
+    <p class="small">Sign in with the authorized Firebase email and password to manage the portfolio.</p>
+    <div class="field"><label for="email">Admin email</label><input id="email" type="email" autocomplete="username" required></div>
+    <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div>
     <button class="btn dark" style="width:100%;margin-top:15px" type="submit">Sign in</button>
     <div class="msg" id="loginMessage"></div>
   </form>
@@ -31,9 +32,10 @@
     <button data-section="images">Images</button>
     <button data-section="preview">Preview</button>
     <button data-section="advanced">Advanced</button>
+    <button data-section="security">Security</button>
     <a href="/" target="_blank" rel="noopener">View portfolio ↗</a>
   </nav>
-  <div class="aside-foot">Content publishing is protected by the admin login. Cloudinary uploads also require an authenticated admin session.</div>
+  <div class="aside-foot">Content publishing, image uploads and account security are protected by the admin session.</div>
 </aside>
 <main class="main">
   <div class="topbar"><div><div class="eyebrow">Administration</div><h1>Dashboard</h1></div><div class="actions"><button class="btn light" id="reloadBtn">Reload page</button><button class="btn primary" id="saveBtn" disabled>Publish changes</button><button class="btn light" id="logoutBtn">Log out</button></div></div>
@@ -68,11 +70,33 @@
   <section class="section" id="section-preview"><div class="panel"><div class="panel-head"><div><div class="eyebrow">Before publishing</div><h2>Preview</h2></div><button class="btn light" id="refreshPreview">Refresh preview</button></div><iframe class="preview-frame" id="previewFrame" title="Portfolio preview" sandbox="allow-scripts allow-same-origin allow-popups"></iframe></div></section>
 
   <section class="section" id="section-advanced"><div class="panel"><div class="panel-head"><div><div class="eyebrow">Power editor</div><h2>Advanced HTML</h2></div><span class="status">Use carefully</span></div><div class="notice">This editor exposes the complete selected page source. It allows adding/removing sections and structural changes. Incorrect HTML can break the page, so Preview before publishing.</div><textarea id="advancedHtml" class="advanced" spellcheck="false" style="margin-top:14px"></textarea><div class="actions" style="margin-top:10px"><button class="btn dark" id="applyAdvanced">Apply HTML to editor</button><button class="btn light" id="resetAdvanced">Reset from working page</button></div></div></section>
+
+  <section class="section" id="section-security">
+    <div class="editor-layout">
+      <div class="panel">
+        <div class="panel-head"><div><div class="eyebrow">Account security</div><h2>Change Password</h2></div><span class="status">Firebase Auth</span></div>
+        <p class="small">Change the password for the currently signed-in Firebase administrator account.</p>
+        <form id="changePasswordForm">
+          <div class="field"><label for="currentPassword">Current password</label><input id="currentPassword" type="password" autocomplete="current-password" required></div>
+          <div class="field"><label for="newPassword">New password</label><input id="newPassword" type="password" autocomplete="new-password" minlength="8" required></div>
+          <div class="field"><label for="confirmPassword">Confirm new password</label><input id="confirmPassword" type="password" autocomplete="new-password" minlength="8" required></div>
+          <button class="btn dark" style="margin-top:15px" type="submit">Update password</button>
+          <div class="msg" id="securityMessage"></div>
+        </form>
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Signed-in account</div><h3 style="margin-top:5px" id="adminEmailDisplay">Firebase administrator</h3>
+        <p class="small">Only the email configured as <strong>ADMIN_EMAIL</strong> on Vercel is allowed to receive a CMS session, even if another Firebase account exists.</p>
+        <div class="notice">Password changes happen through Firebase Authentication. GitHub, Cloudinary and Vercel secrets are not exposed to the browser.</div>
+      </div>
+    </div>
+  </section>
   <div class="msg" id="globalMessage"></div>
 </main>
 </div>
 <script type="module">
 import { uploadImageToCloudinary } from '/assets/cloudinary-upload.js';
+import { changeAdminPassword, currentAdminUser, signInAdmin, signOutAdmin } from '/assets/firebase-admin.js';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const PAGES={home:'Home',about:'About',experience:'Experience',impact:'Impact',insights:'Insights',education:'Education',contact:'Contact'};
 let doc=null, currentPage='home', dirty=false, selectedUpload=null;
@@ -92,13 +116,15 @@ async function loadPage(){setStatus('Loading');$('#saveBtn').disabled=true;setMs
 async function savePage(){if(!doc||!dirty)return;$('#saveBtn').disabled=true;setStatus('Publishing');setMsg(globalMessage,'Publishing changes…');try{const r=await fetch('/api/cms',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({page:currentPage,html:serialize()})});const j=await r.json();if(r.status===401)return showLogin();if(!r.ok)throw new Error(j.error||'Publish failed');dirty=false;$('#dirtyState').textContent='Published';setStatus('Published');setMsg(globalMessage,'Changes published to GitHub. Vercel can now redeploy the updated page.','ok')}catch(e){$('#saveBtn').disabled=false;setStatus('Error');setMsg(globalMessage,e.message,'error')}}
 function refreshPreview(){if(!doc)return;const clone=doc.cloneNode(true);const base=clone.createElement('base');base.href='/';clone.head.prepend(base);$('#previewFrame').srcdoc='<!doctype html>'+clone.documentElement.outerHTML}
 function showLogin(){dashboard.classList.add('hidden');loginView.classList.remove('hidden')}
-function showDashboard(){loginView.classList.add('hidden');dashboard.classList.remove('hidden');loadPage();renderMedia()}
+function updateAdminIdentity(){const user=currentAdminUser();$('#adminEmailDisplay').textContent=user?.email||'Firebase administrator'}
+function showDashboard(){loginView.classList.add('hidden');dashboard.classList.remove('hidden');updateAdminIdentity();loadPage();renderMedia()}
 async function authStatus(){try{const r=await fetch('/api/admin-auth',{cache:'no-store'});const j=await r.json();j.authenticated?showDashboard():showLogin()}catch{showLogin()}}
-$('#loginForm').addEventListener('submit',async e=>{e.preventDefault();setMsg(loginMessage,'Signing in…');const r=await fetch('/api/admin-auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('#password').value})});const j=await r.json();if(!r.ok)return setMsg(loginMessage,j.error||'Sign in failed','error');$('#password').value='';setMsg(loginMessage,'');showDashboard()});
-$('#logoutBtn').addEventListener('click',async()=>{await fetch('/api/admin-auth',{method:'DELETE'});showLogin()});
+$('#loginForm').addEventListener('submit',async e=>{e.preventDefault();setMsg(loginMessage,'Signing in…');try{const firebase=await signInAdmin($('#email').value,$('#password').value);const r=await fetch('/api/admin-auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({idToken:firebase.idToken})});const j=await r.json();if(!r.ok)throw new Error(j.error||'Sign in failed');$('#password').value='';setMsg(loginMessage,'');showDashboard()}catch(error){setMsg(loginMessage,error.message||'Sign in failed','error')}});
+$('#logoutBtn').addEventListener('click',async()=>{try{await signOutAdmin()}catch{}await fetch('/api/admin-auth',{method:'DELETE'});showLogin()});
+$('#changePasswordForm').addEventListener('submit',async e=>{e.preventDefault();const message=$('#securityMessage'),current=$('#currentPassword').value,next=$('#newPassword').value,confirmPassword=$('#confirmPassword').value;if(next!==confirmPassword)return setMsg(message,'The new passwords do not match.','error');if(next.length<8)return setMsg(message,'Use at least 8 characters for the new password.','error');setMsg(message,'Updating password…');try{await changeAdminPassword(current,next);$('#currentPassword').value='';$('#newPassword').value='';$('#confirmPassword').value='';setMsg(message,'Password updated successfully. Use the new password the next time you sign in.','ok')}catch(error){setMsg(message,error.message||'Unable to update password.','error')}});
 $('#pageSelect').addEventListener('change',async e=>{if(dirty&&!confirm('Discard unsaved changes and switch pages?')){e.target.value=currentPage;return}currentPage=e.target.value;await loadPage()});
 $('#reloadBtn').addEventListener('click',()=>{if(!dirty||confirm('Discard unsaved changes and reload?'))loadPage()});$('#saveBtn').addEventListener('click',savePage);$('#refreshPreview').addEventListener('click',refreshPreview);
-$$('[data-section]').forEach(b=>b.addEventListener('click',()=>openSection(b.dataset.section)));$$('[data-open-section]').forEach(b=>b.addEventListener('click',()=>openSection(b.dataset.openSection)));function openSection(name){$$('[data-section]').forEach(b=>b.classList.toggle('active',b.dataset.section===name));$$('.section').forEach(s=>s.classList.toggle('active',s.id==='section-'+name));if(name==='preview')refreshPreview();if(name==='advanced')syncAdvanced()}
+$$('[data-section]').forEach(b=>b.addEventListener('click',()=>openSection(b.dataset.section)));$$('[data-open-section]').forEach(b=>b.addEventListener('click',()=>openSection(b.dataset.openSection)));function openSection(name){$$('[data-section]').forEach(b=>b.classList.toggle('active',b.dataset.section===name));$$('.section').forEach(s=>s.classList.toggle('active',s.id==='section-'+name));if(name==='preview')refreshPreview();if(name==='advanced')syncAdvanced();if(name==='security')updateAdminIdentity()}
 $$('[data-editor-tab]').forEach(b=>b.addEventListener('click',()=>{$$('[data-editor-tab]').forEach(x=>x.classList.toggle('active',x===b));$('#textEditor').classList.toggle('hidden',b.dataset.editorTab!=='text');$('#linkEditor').classList.toggle('hidden',b.dataset.editorTab!=='links')}));
 $('#applyAdvanced').addEventListener('click',()=>{const parsed=new DOMParser().parseFromString($('#advancedHtml').value,'text/html');if(!parsed.body||!parsed.documentElement)return setMsg(globalMessage,'Invalid HTML.','error');doc=parsed;markDirty();refreshEditors();setMsg(globalMessage,'Advanced HTML applied to the working copy. Preview before publishing.','ok')});$('#resetAdvanced').addEventListener('click',syncAdvanced);
 const MEDIA_KEY='ndanji-cloudinary-images';function loadMedia(){try{return JSON.parse(localStorage.getItem(MEDIA_KEY)||'[]')}catch{return[]}}function saveMedia(a){localStorage.setItem(MEDIA_KEY,JSON.stringify(a.slice(0,40)));renderMedia()}function renderMedia(){const host=$('#mediaHistory'),items=loadMedia();host.innerHTML=items.slice(0,8).map((x,i)=>`<div class="media-card"><img src="${x.secureUrl}" alt="Cloudinary upload"><div class="url">${x.secureUrl}</div><button class="btn light copy-media" data-i="${i}">Copy URL</button></div>`).join('')||'<div class="small">No recent uploads in this browser.</div>';host.querySelectorAll('.copy-media').forEach(b=>b.addEventListener('click',async()=>{await navigator.clipboard.writeText(items[Number(b.dataset.i)].secureUrl);b.textContent='Copied'}))}
