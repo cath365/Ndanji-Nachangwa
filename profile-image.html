@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Profile Photo Manager | Ndanji Nachangwa</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#fff5d8;--paper:#fffdf7;--navy:#0c2857;--blue:#435f90;--ink:#10244d;--muted:#69778e;--line:rgba(12,40,87,.14);--danger:#a92f35;--ok:#26734d}*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,Arial,sans-serif;background:#e9e0cc;color:var(--ink);padding:28px}.wrap{max-width:900px;margin:auto}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:20px}.brand{font-family:Anton,sans-serif;font-size:1.6rem;text-transform:uppercase}.back{color:var(--navy);font-weight:800;text-decoration:none}.card{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 20px 60px #0c285712}.grid{display:grid;grid-template-columns:320px 1fr;gap:22px}.preview{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:18px;background:#ddd;border:1px solid var(--line)}h1,h2{font-family:Anton,sans-serif;text-transform:uppercase;margin:0}h1{font-size:clamp(2.4rem,5vw,4.2rem)}h2{font-size:1.5rem}.small{font-size:.78rem;color:var(--muted);line-height:1.55}.field{display:grid;gap:7px;margin-top:16px}.field label{font-size:.76rem;font-weight:800;color:var(--muted)}input{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);padding:11px 12px;outline:none}.btn{border:0;border-radius:999px;padding:11px 15px;font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em;cursor:pointer}.primary{background:var(--blue);color:#fff}.dark{background:var(--navy);color:#fff}.light{background:#fff;color:var(--navy);border:1px solid var(--line)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.drop{border:2px dashed #8298ba66;border-radius:15px;padding:18px;text-align:center;background:#fffaf0;margin-top:14px}.drop input{display:none}.msg{margin-top:12px;font-size:.8rem;font-weight:700;line-height:1.5}.ok{color:var(--ok)}.error{color:var(--danger)}@media(max-width:720px){body{padding:14px}.grid{grid-template-columns:1fr}.preview{max-height:520px}.top{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div><div class="brand">Ndanji Nachangwa</div><div class="small">Profile photo manager</div></div><a class="back" href="/admin.html">← Back to CMS</a></div>
+  <div class="card">
+    <div class="grid">
+      <div><img id="preview" class="preview" alt="Current profile photo"></div>
+      <div>
+        <h1>Profile Photo</h1>
+        <p class="small">Change the Home page profile photo in one place. Upload from a laptop or phone, or paste a direct image link. Saving publishes the updated Home page to GitHub.</p>
+
+        <div class="drop" id="dropzone">
+          <strong>Upload from laptop or phone</strong>
+          <p class="small">JPEG, PNG, WebP and other browser-supported image formats.</p>
+          <label class="btn primary" for="fileInput">Choose photo</label>
+          <input id="fileInput" type="file" accept="image/*">
+          <div class="msg" id="uploadMsg"></div>
+        </div>
+
+        <div class="field">
+          <label for="imageUrl">Or paste image link</label>
+          <input id="imageUrl" type="url" placeholder="https://...">
+        </div>
+        <div class="field">
+          <label for="altText">Alternative text</label>
+          <input id="altText" type="text" value="Ndanji Nachangwa">
+        </div>
+
+        <div class="actions">
+          <button class="btn dark" id="saveBtn" type="button">Save profile photo</button>
+          <button class="btn light" id="reloadBtn" type="button">Reload current photo</button>
+        </div>
+        <div class="msg" id="message"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="module">
+import { uploadImageToCloudinary } from '/assets/cloudinary-upload.js';
+
+const $ = s => document.querySelector(s);
+const preview = $('#preview');
+const imageUrl = $('#imageUrl');
+const altText = $('#altText');
+const message = $('#message');
+const uploadMsg = $('#uploadMsg');
+let homeDoc = null;
+
+function setMsg(el,text,type=''){el.textContent=text;el.className='msg'+(type?' '+type:'')}
+function findProfileImage(doc){
+  return [...doc.querySelectorAll('img')].find(img => (img.getAttribute('alt')||'').toLowerCase().includes('ndanji nachangwa')) || doc.querySelector('.portrait img') || doc.querySelector('img');
+}
+function serialize(){return '<!doctype html>'+homeDoc.documentElement.outerHTML}
+
+async function loadCurrent(){
+  setMsg(message,'Loading current profile photo…');
+  try{
+    const r=await fetch('/api/cms?page=home',{cache:'no-store'});
+    if(r.status===401){location.href='/admin.html';return}
+    const j=await r.json();
+    if(!r.ok)throw new Error(j.error||'Unable to load Home page');
+    homeDoc=new DOMParser().parseFromString(j.html,'text/html');
+    const img=findProfileImage(homeDoc);
+    if(!img)throw new Error('Profile image was not found on the Home page.');
+    const src=img.getAttribute('src')||'';
+    const alt=img.getAttribute('alt')||'Ndanji Nachangwa';
+    imageUrl.value=src;
+    altText.value=alt;
+    preview.src=src;
+    setMsg(message,'Current profile photo loaded.','ok');
+  }catch(e){setMsg(message,e.message,'error')}
+}
+
+async function uploadFile(file){
+  if(!file)return;
+  setMsg(uploadMsg,'Uploading to Cloudinary…');
+  try{
+    const result=await uploadImageToCloudinary(file);
+    imageUrl.value=result.secureUrl;
+    preview.src=result.secureUrl;
+    setMsg(uploadMsg,'Upload complete. Click Save profile photo to publish it.','ok');
+  }catch(e){setMsg(uploadMsg,e.message,'error')}
+}
+
+$('#fileInput').addEventListener('change',e=>uploadFile(e.target.files?.[0]));
+$('#dropzone').addEventListener('dragover',e=>{e.preventDefault()});
+$('#dropzone').addEventListener('drop',e=>{e.preventDefault();uploadFile(e.dataTransfer.files?.[0])});
+imageUrl.addEventListener('input',()=>{if(imageUrl.value.trim())preview.src=imageUrl.value.trim()});
+$('#reloadBtn').addEventListener('click',loadCurrent);
+
+$('#saveBtn').addEventListener('click',async()=>{
+  if(!homeDoc)return setMsg(message,'Load the Home page first.','error');
+  const url=imageUrl.value.trim();
+  if(!/^https?:\/\//i.test(url) && !url.startsWith('/'))return setMsg(message,'Enter a valid image URL.','error');
+  const img=findProfileImage(homeDoc);
+  if(!img)return setMsg(message,'Profile image was not found on the Home page.','error');
+  img.setAttribute('src',url);
+  img.setAttribute('alt',altText.value.trim()||'Ndanji Nachangwa');
+  img.removeAttribute('srcset');
+  $('#saveBtn').disabled=true;
+  setMsg(message,'Publishing profile photo…');
+  try{
+    const r=await fetch('/api/cms',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({page:'home',html:serialize()})});
+    if(r.status===401){location.href='/admin.html';return}
+    const j=await r.json();
+    if(!r.ok)throw new Error(j.error||'Publish failed');
+    setMsg(message,'Profile photo published successfully. Vercel will redeploy the Home page shortly.','ok');
+  }catch(e){setMsg(message,e.message,'error')}finally{$('#saveBtn').disabled=false}
+});
+
+loadCurrent();
+</script>
+</body>
+</html>
