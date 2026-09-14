@@ -37,6 +37,27 @@ function validCommitSha(value) {
   return /^[0-9a-f]{7,40}$/i.test(String(value || ''));
 }
 
+function deployHook() {
+  const raw = String(process.env.PUBLIC_DEPLOY_HOOK_URL || '').trim();
+  if (!raw) return null;
+  try {
+    const url = new URL(raw);
+    if (url.protocol !== 'https:' || url.hostname !== 'api.vercel.com' || !url.pathname.startsWith('/v1/integrations/deploy/')) return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+async function triggerDeployment() {
+  const hook = deployHook();
+  if (!hook) return { configured: false, triggered: false };
+  const response = await fetch(hook, { method: 'POST', headers: { Accept: 'application/json' } });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) return { configured: true, triggered: false, error: data?.error?.message || data?.message || `Vercel deploy hook failed (${response.status})` };
+  return { configured: true, triggered: true, jobId: data?.job?.id || data?.id || null };
+}
+
 export default async function handler(req, res) {
   if (!isAdminRequest(req)) return res.status(401).json({ error: 'Unauthorized' });
   const token = process.env.GITHUB_TOKEN;
@@ -93,12 +114,15 @@ export default async function handler(req, res) {
       })
     });
 
+    const deployment = await triggerDeployment();
+
     return res.status(200).json({
       ok: true,
       page,
       path,
       restoredFrom: restoreSha,
-      commit: restored.commit?.sha || null
+      commit: restored.commit?.sha || null,
+      deployment
     });
   } catch (error) {
     return res.status(500).json({ error: error.message || 'Unable to restore this version.' });
