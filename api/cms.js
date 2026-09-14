@@ -7,6 +7,7 @@ const PAGE_MAP = {
   about: 'about.html',
   experience: 'experience.html',
   impact: 'impact.html',
+  engagements: 'engagements.html',
   insights: 'insights.html',
   education: 'education.html',
   contact: 'contact.html'
