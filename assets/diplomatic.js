@@ -11,7 +11,7 @@
     if(document.querySelector('link[data-laptop-fit]')) return;
     var fit=document.createElement('link');
     fit.rel='stylesheet';
-    fit.href='/assets/laptop-fit.css?v=2';
+    fit.href='/assets/laptop-fit.css?v=3';
     fit.setAttribute('data-laptop-fit','true');
     document.head.appendChild(fit);
   }
@@ -70,10 +70,29 @@
     footer.parentNode.insertBefore(section,footer);
   }
 
+  function protectProfileImages(){
+    document.querySelectorAll('.portrait-frame img').forEach(function(img){
+      if(img.dataset.fallbackReady==='true') return;
+      img.dataset.fallbackReady='true';
+      function showFallback(){
+        var frame=img.closest('.portrait-frame');
+        if(!frame||frame.querySelector('.portrait-fallback')) return;
+        img.style.display='none';
+        var fallback=document.createElement('div');
+        fallback.className='portrait-fallback';
+        fallback.innerHTML='<div class="portrait-fallback-mark">NN</div><div class="portrait-fallback-copy"><strong>Ndanji Nachangwa</strong><span>Professional portrait can be updated from the private portfolio admin.</span></div>';
+        frame.insertBefore(fallback,frame.firstChild);
+      }
+      img.addEventListener('error',showFallback,{once:true});
+      if(img.complete&&img.naturalWidth===0) showFallback();
+    });
+  }
+
   ensureRecognitionStyles();
   ensureLaptopStyles();
   enhancePublicNavigation();
   addHomeRecognitionFeature();
+  protectProfileImages();
 
   var menu=document.querySelector('[data-menu]');
   var nav=document.querySelector('[data-nav]');
