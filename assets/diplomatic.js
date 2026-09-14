@@ -120,6 +120,25 @@
     });
   }
 
+  function addDiscreetAdminPortal(){
+    if(document.querySelector('.footer-admin-portal')) return;
+    var footerBottom=document.querySelector('.footer-bottom');
+    if(!footerBottom) return;
+    if(!document.querySelector('#footer-admin-portal-style')){
+      var style=document.createElement('style');
+      style.id='footer-admin-portal-style';
+      style.textContent='.footer-admin-portal{display:inline-flex;align-items:center;justify-content:center;margin-left:auto;padding:2px 5px;font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:inherit;opacity:.22;transition:opacity .2s ease,color .2s ease;white-space:nowrap}.footer-admin-portal:hover,.footer-admin-portal:focus-visible{opacity:.78;color:#d4bc8a;outline:none}.footer-admin-portal:focus-visible{box-shadow:0 0 0 1px rgba(212,188,138,.6)}@media(max-width:650px){.footer-admin-portal{font-size:.48rem;opacity:.18;padding:2px 3px}}';
+      document.head.appendChild(style);
+    }
+    var link=document.createElement('a');
+    link.className='footer-admin-portal';
+    link.href='/admin.html';
+    link.textContent='Portal';
+    link.setAttribute('aria-label','Administrator login');
+    link.setAttribute('title','Administrator login');
+    footerBottom.appendChild(link);
+  }
+
   ensureRecognitionStyles();
   ensureLaptopStyles();
   ensureCmsBlockStyles();
@@ -127,6 +146,7 @@
   enhancePublicNavigation();
   addHomeRecognitionFeature();
   protectProfileImages();
+  addDiscreetAdminPortal();
 
   var menu=document.querySelector('[data-menu]');
   var nav=document.querySelector('[data-nav]');
