@@ -42,6 +42,63 @@ function looksLikePortfolioHtml(html) {
   return normalized.includes('<html') && normalized.includes('<body') && normalized.includes('ndanji');
 }
 
+function getValidatedDeployHook() {
+  const raw = String(process.env.PUBLIC_DEPLOY_HOOK_URL || '').trim();
+  if (!raw) return null;
+
+  let url;
+  try {
+    url = new URL(raw);
+  } catch {
+    throw new Error('PUBLIC_DEPLOY_HOOK_URL is not a valid URL.');
+  }
+
+  if (url.protocol !== 'https:' || url.hostname !== 'api.vercel.com') {
+    throw new Error('PUBLIC_DEPLOY_HOOK_URL must be an HTTPS Vercel Deploy Hook URL.');
+  }
+
+  if (!url.pathname.startsWith('/v1/integrations/deploy/')) {
+    throw new Error('PUBLIC_DEPLOY_HOOK_URL is not a Vercel Deploy Hook URL.');
+  }
+
+  return url.toString();
+}
+
+async function triggerPublicDeployment() {
+  const hook = getValidatedDeployHook();
+  if (!hook) {
+    return {
+      configured: false,
+      triggered: false,
+      message: 'Public deploy hook is not configured. GitHub publish completed; Git-connected Vercel projects may still redeploy automatically.'
+    };
+  }
+
+  const response = await fetch(hook, {
+    method: 'POST',
+    headers: { Accept: 'application/json' }
+  });
+
+  let payload = null;
+  try {
+    payload = await response.json();
+  } catch {
+    payload = null;
+  }
+
+  if (!response.ok) {
+    const detail = payload?.error?.message || payload?.message || `Vercel deploy hook failed (${response.status})`;
+    return { configured: true, triggered: false, error: detail };
+  }
+
+  return {
+    configured: true,
+    triggered: true,
+    jobId: payload?.job?.id || payload?.id || null,
+    message: 'Public site deployment triggered.'
+  };
+}
+
 export default async function handler(req, res) {
   if (!isAdminRequest(req)) return res.status(401).json({ error: 'Unauthorized' });
 
@@ -82,9 +139,24 @@ export default async function handler(req, res) {
         branch: BRANCH
       })
     });
+
     const result = await response.json();
     if (!response.ok) throw new Error(result?.message || `GitHub update failed (${response.status})`);
-    return res.status(200).json({ ok: true, page, path, commit: result.commit?.sha || null });
+
+    let deployment;
+    try {
+      deployment = await triggerPublicDeployment();
+    } catch (error) {
+      deployment = { configured: true, triggered: false, error: error.message };
+    }
+
+    return res.status(200).json({
+      ok: true,
+      page,
+      path,
+      commit: result.commit?.sha || null,
+      deployment
+    });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
