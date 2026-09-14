@@ -18,18 +18,18 @@
       <div><img id="preview" class="preview" alt="Current profile photo"></div>
       <div>
         <h1>Profile Photo</h1>
-        <p class="small">Update the main professional portrait used on the public Profile and About pages. The image is stored in Cloudinary at one permanent address, so changing the portrait no longer requires a GitHub write token.</p>
+        <p class="small">Update the main professional portrait used on the public Profile and About pages. The photo is compressed in the browser, then uploaded securely through the private admin API to Cloudinary.</p>
 
         <div class="drop" id="dropzone">
           <strong>Upload from laptop or phone</strong>
-          <p class="small">Choose JPEG, PNG, WebP or another browser-supported image.</p>
+          <p class="small">JPEG, PNG, WebP and other browser-supported image formats. Large photos are automatically resized before upload.</p>
           <label class="btn primary" for="fileInput">Choose photo</label>
           <input id="fileInput" type="file" accept="image/*">
           <div class="msg" id="uploadMsg"></div>
         </div>
 
         <div class="field">
-          <label for="imageUrl">Or paste a direct image link</label>
+          <label for="imageUrl">Or paste a direct HTTPS image link</label>
           <input id="imageUrl" type="url" placeholder="https://...">
         </div>
         <div class="field">
@@ -42,22 +42,23 @@
           <button class="btn light" id="reloadBtn" type="button">Reload current photo</button>
         </div>
         <div class="msg" id="message"></div>
-        <div class="notice"><strong>New publishing flow:</strong> Admin → Cloudinary permanent profile image → public website. This avoids the “Resource not accessible by personal access token” error for profile-photo changes.</div>
+        <div class="notice"><strong>Upload path:</strong> Admin → secure Vercel API → Cloudinary → public Profile and About pages. GitHub is not used for profile-photo uploads.</div>
       </div>
     </div>
   </div>
 </div>
 <script>
 const $ = s => document.querySelector(s);
-const STABLE_URL = 'https://res.cloudinary.com/dwka1eckr/image/upload/ndanji-portfolio/profile-main.jpg';
+const STABLE_URL = 'https://res.cloudinary.com/dwka1eckr/image/upload/ndanji-portfolio/profile-main';
 const preview = $('#preview');
 const imageUrl = $('#imageUrl');
 const message = $('#message');
 const uploadMsg = $('#uploadMsg');
 let selectedFile = null;
+let selectedDataUrl = '';
 
 function setMsg(el,text,type=''){el.textContent=text||'';el.className='msg'+(type?' '+type:'')}
-function currentUrl(){return STABLE_URL+'?t='+Date.now()}
+function cacheBusted(url){return url+(url.includes('?')?'&':'?')+'t='+Date.now()}
 
 async function checkAdmin(){
   try{
@@ -71,77 +72,89 @@ async function checkAdmin(){
 async function loadCurrent(){
   if(!await checkAdmin())return;
   setMsg(message,'Loading current profile photo…');
-  preview.src=currentUrl();
+  preview.src=cacheBusted(STABLE_URL);
   imageUrl.value='';
   preview.onload=()=>setMsg(message,'Current profile photo loaded.','ok');
-  preview.onerror=()=>setMsg(message,'No permanent profile photo has been published yet. Choose a photo and publish it.','');
+  preview.onerror=()=>setMsg(message,'No profile photo has been published yet. Choose a photo and publish it.','');
 }
 
-async function getUploadSignature(){
-  const r=await fetch('/api/profile-photo-sign',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',cache:'no-store'});
-  const j=await r.json().catch(()=>({}));
-  if(r.status===401){location.href='/admin.html';throw new Error('Admin session expired.')}
-  if(!r.ok)throw new Error(j.error||'Unable to prepare profile photo upload.');
-  return j;
+function compressImage(file,maxWidth=1600,maxHeight=2000,quality=.84){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onerror=()=>reject(new Error('Unable to read the selected image.'));
+    reader.onload=()=>{
+      const img=new Image();
+      img.onerror=()=>reject(new Error('The selected file is not a readable image.'));
+      img.onload=()=>{
+        let w=img.naturalWidth,h=img.naturalHeight;
+        const scale=Math.min(1,maxWidth/w,maxHeight/h);
+        w=Math.max(1,Math.round(w*scale));h=Math.max(1,Math.round(h*scale));
+        const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');
+        ctx.drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg',quality));
+      };
+      img.src=reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
-async function uploadProfile(source){
-  const c=await getUploadSignature();
-  const f=new FormData();
-  f.append('file',source);
-  f.append('api_key',c.apiKey);
-  f.append('timestamp',String(c.timestamp));
-  f.append('folder',c.folder);
-  f.append('public_id',c.publicId);
-  f.append('format',c.format);
-  f.append('overwrite',String(c.overwrite));
-  f.append('invalidate',String(c.invalidate));
-  f.append('signature',c.signature);
+async function chooseFile(file){
+  if(!file)return;
+  if(!String(file.type||'').startsWith('image/'))return setMsg(uploadMsg,'Choose an image file.','error');
+  selectedFile=file;selectedDataUrl='';imageUrl.value='';
+  preview.src=URL.createObjectURL(file);
+  setMsg(uploadMsg,'Preparing image for upload…');
+  try{
+    selectedDataUrl=await compressImage(file);
+    const approx=Math.round(selectedDataUrl.length*0.75/1024);
+    setMsg(uploadMsg,`${file.name} ready • about ${approx} KB after optimization. Click Publish profile photo.`,'ok');
+  }catch(e){selectedFile=null;selectedDataUrl='';setMsg(uploadMsg,e.message,'error')}
+}
+
+async function publishSource(source){
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),30000);
   try{
-    const r=await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(c.cloudName)}/image/upload`,{method:'POST',body:f,signal:controller.signal});
-    const j=await r.json().catch(()=>({}));
-    if(!r.ok)throw new Error(j?.error?.message||'Cloudinary profile upload failed.');
-    return {stableUrl:c.stableUrl,secureUrl:j.secure_url||c.stableUrl};
+    const r=await fetch('/api/profile-photo-upload',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({source}),
+      cache:'no-store',
+      credentials:'same-origin',
+      signal:controller.signal
+    });
+    const text=await r.text();
+    let j={};try{j=text?JSON.parse(text):{}}catch{}
+    if(r.status===401){location.href='/admin.html';throw new Error('Admin session expired.')}
+    if(!r.ok)throw new Error(j.error||text||`Upload failed (${r.status}).`);
+    return j;
   }catch(e){
-    if(e?.name==='AbortError')throw new Error('Profile photo upload timed out. Please try again.');
+    if(e?.name==='AbortError')throw new Error('Profile photo upload timed out after 30 seconds.');
     throw e;
   }finally{clearTimeout(timer)}
-}
-
-function chooseFile(file){
-  if(!file)return;
-  if(!String(file.type||'').startsWith('image/'))return setMsg(uploadMsg,'Choose an image file.','error');
-  selectedFile=file;
-  imageUrl.value='';
-  preview.src=URL.createObjectURL(file);
-  setMsg(uploadMsg,file.name+' selected. Click Publish profile photo.','ok');
 }
 
 $('#fileInput').addEventListener('change',e=>chooseFile(e.target.files?.[0]));
 $('#dropzone').addEventListener('dragover',e=>e.preventDefault());
 $('#dropzone').addEventListener('drop',e=>{e.preventDefault();chooseFile(e.dataTransfer.files?.[0])});
-imageUrl.addEventListener('input',()=>{const u=imageUrl.value.trim();if(/^https?:\/\//i.test(u)){selectedFile=null;preview.src=u}});
+imageUrl.addEventListener('input',()=>{const u=imageUrl.value.trim();if(/^https:\/\//i.test(u)){selectedFile=null;selectedDataUrl='';preview.src=u}});
 $('#reloadBtn').addEventListener('click',loadCurrent);
 
 $('#saveBtn').addEventListener('click',async()=>{
   const pasted=imageUrl.value.trim();
-  let source=selectedFile;
-  if(!source&&pasted){
-    if(!/^https?:\/\//i.test(pasted))return setMsg(message,'Enter a valid direct image URL.','error');
-    source=pasted;
-  }
-  if(!source)return setMsg(message,'Choose a photo or paste an image URL first.','error');
+  const source=selectedDataUrl || (/^https:\/\//i.test(pasted)?pasted:'');
+  if(!source)return setMsg(message,'Choose a photo or paste a valid HTTPS image URL first.','error');
 
-  const btn=$('#saveBtn');btn.disabled=true;setMsg(message,'Publishing profile photo to Cloudinary…');
+  const btn=$('#saveBtn');btn.disabled=true;setMsg(message,'Uploading profile photo securely…');
   try{
-    const result=await uploadProfile(source);
-    selectedFile=null;$('#fileInput').value='';imageUrl.value='';
-    preview.src=result.stableUrl+'?t='+Date.now();
+    const result=await publishSource(source);
+    selectedFile=null;selectedDataUrl='';$('#fileInput').value='';imageUrl.value='';
+    preview.src=cacheBusted(result.secureUrl||STABLE_URL);
     setMsg(uploadMsg,'');
-    setMsg(message,'Profile photo published successfully. The Profile and About pages now use this permanent Cloudinary image. Refresh the public site after a few seconds.','ok');
-  }catch(e){setMsg(message,e.message||'Unable to publish profile photo.','error')}
+    setMsg(message,'Profile photo uploaded successfully. Refresh the public Profile and About pages after a few seconds.','ok');
+  }catch(e){setMsg(message,e.message||'Unable to upload profile photo.','error')}
   finally{btn.disabled=false}
 });
 
