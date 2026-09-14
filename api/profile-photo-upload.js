@@ -4,8 +4,7 @@ import { isAdminRequest } from './_admin-session.js';
 const CLOUD_NAME = String(process.env.CLOUDINARY_CLOUD_NAME || '').trim();
 const API_KEY = String(process.env.CLOUDINARY_API_KEY || '').trim();
 const API_SECRET = String(process.env.CLOUDINARY_API_SECRET || '').trim();
-const FOLDER = 'ndanji-portfolio';
-const PUBLIC_ID = 'profile-main';
+const PUBLIC_ID = 'ndanji-portfolio/profile-main';
 
 function sign(params) {
   const base = Object.keys(params)
@@ -47,15 +46,12 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Choose an image or provide a valid HTTPS image URL.' });
   }
 
-  // Keep the request small enough for serverless limits. The browser compresses
-  // local photos before sending them here.
   if (source.startsWith('data:image/') && source.length > 4_000_000) {
     return res.status(413).json({ error: 'The image is still too large after compression. Choose a smaller photo.' });
   }
 
   const timestamp = Math.floor(Date.now() / 1000);
   const params = {
-    folder: FOLDER,
     invalidate: 'true',
     overwrite: 'true',
     public_id: PUBLIC_ID,
@@ -66,7 +62,6 @@ export default async function handler(req, res) {
   form.append('file', source);
   form.append('api_key', API_KEY);
   form.append('timestamp', String(timestamp));
-  form.append('folder', FOLDER);
   form.append('public_id', PUBLIC_ID);
   form.append('overwrite', 'true');
   form.append('invalidate', 'true');
@@ -92,7 +87,7 @@ export default async function handler(req, res) {
       version: data.version || null,
       width: data.width || null,
       height: data.height || null,
-      publicId: data.public_id || `${FOLDER}/${PUBLIC_ID}`
+      publicId: data.public_id || PUBLIC_ID
     });
   } catch (error) {
     if (error?.name === 'AbortError') {
