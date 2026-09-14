@@ -7,7 +7,7 @@
 <title>Profile Photo Manager | Ndanji Nachangwa</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--cream:#fff5d8;--paper:#fffdf7;--navy:#0c2857;--blue:#435f90;--ink:#10244d;--muted:#69778e;--line:rgba(12,40,87,.14);--danger:#a92f35;--ok:#26734d}*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,Arial,sans-serif;background:#e9e0cc;color:var(--ink);padding:28px}.wrap{max-width:900px;margin:auto}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:20px}.brand{font-family:Anton,sans-serif;font-size:1.6rem;text-transform:uppercase}.back{color:var(--navy);font-weight:800;text-decoration:none}.card{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 20px 60px #0c285712}.grid{display:grid;grid-template-columns:320px 1fr;gap:22px}.preview{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:18px;background:#ddd;border:1px solid var(--line)}h1,h2{font-family:Anton,sans-serif;text-transform:uppercase;margin:0}h1{font-size:clamp(2.4rem,5vw,4.2rem)}h2{font-size:1.5rem}.small{font-size:.78rem;color:var(--muted);line-height:1.55}.field{display:grid;gap:7px;margin-top:16px}.field label{font-size:.76rem;font-weight:800;color:var(--muted)}input{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);padding:11px 12px;outline:none}.btn{border:0;border-radius:999px;padding:11px 15px;font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em;cursor:pointer}.primary{background:var(--blue);color:#fff}.dark{background:var(--navy);color:#fff}.light{background:#fff;color:var(--navy);border:1px solid var(--line)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.drop{border:2px dashed #8298ba66;border-radius:15px;padding:18px;text-align:center;background:#fffaf0;margin-top:14px}.drop input{display:none}.msg{margin-top:12px;font-size:.8rem;font-weight:700;line-height:1.5}.ok{color:var(--ok)}.error{color:var(--danger)}@media(max-width:720px){body{padding:14px}.grid{grid-template-columns:1fr}.preview{max-height:520px}.top{align-items:flex-start;flex-direction:column}}
+:root{--cream:#fff5d8;--paper:#fffdf7;--navy:#0c2857;--blue:#435f90;--ink:#10244d;--muted:#69778e;--line:rgba(12,40,87,.14);--danger:#a92f35;--ok:#26734d}*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,Arial,sans-serif;background:#e9e0cc;color:var(--ink);padding:28px}.wrap{max-width:900px;margin:auto}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:20px}.brand{font-family:Anton,sans-serif;font-size:1.6rem;text-transform:uppercase}.back{color:var(--navy);font-weight:800;text-decoration:none}.card{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 20px 60px #0c285712}.grid{display:grid;grid-template-columns:320px 1fr;gap:22px}.preview{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:18px;background:#ddd;border:1px solid var(--line)}h1,h2{font-family:Anton,sans-serif;text-transform:uppercase;margin:0}h1{font-size:clamp(2.4rem,5vw,4.2rem)}h2{font-size:1.5rem}.small{font-size:.78rem;color:var(--muted);line-height:1.55}.field{display:grid;gap:7px;margin-top:16px}.field label{font-size:.76rem;font-weight:800;color:var(--muted)}input{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);padding:11px 12px;outline:none}.btn{border:0;border-radius:999px;padding:11px 15px;font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em;cursor:pointer}.btn:disabled{opacity:.5;cursor:not-allowed}.primary{background:var(--blue);color:#fff}.dark{background:var(--navy);color:#fff}.light{background:#fff;color:var(--navy);border:1px solid var(--line)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.drop{border:2px dashed #8298ba66;border-radius:15px;padding:18px;text-align:center;background:#fffaf0;margin-top:14px}.drop input{display:none}.msg{margin-top:12px;font-size:.8rem;font-weight:700;line-height:1.5}.ok{color:var(--ok)}.error{color:var(--danger)}.notice{margin-top:14px;padding:12px 14px;border-left:3px solid #c5a25c;background:#f7eedb;color:#65532d;font-size:.75rem;line-height:1.55}@media(max-width:720px){body{padding:14px}.grid{grid-template-columns:1fr}.preview{max-height:520px}.top{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
@@ -18,18 +18,18 @@
       <div><img id="preview" class="preview" alt="Current profile photo"></div>
       <div>
         <h1>Profile Photo</h1>
-        <p class="small">Change the Home page profile photo in one place. Upload from a laptop or phone, or paste a direct image link. Saving publishes the updated Home page to GitHub.</p>
+        <p class="small">Update the main professional portrait used on the public Profile and About pages. The image is stored in Cloudinary at one permanent address, so changing the portrait no longer requires a GitHub write token.</p>
 
         <div class="drop" id="dropzone">
           <strong>Upload from laptop or phone</strong>
-          <p class="small">JPEG, PNG, WebP and other browser-supported image formats.</p>
+          <p class="small">Choose JPEG, PNG, WebP or another browser-supported image.</p>
           <label class="btn primary" for="fileInput">Choose photo</label>
           <input id="fileInput" type="file" accept="image/*">
           <div class="msg" id="uploadMsg"></div>
         </div>
 
         <div class="field">
-          <label for="imageUrl">Or paste image link</label>
+          <label for="imageUrl">Or paste a direct image link</label>
           <input id="imageUrl" type="url" placeholder="https://...">
         </div>
         <div class="field">
@@ -38,85 +38,111 @@
         </div>
 
         <div class="actions">
-          <button class="btn dark" id="saveBtn" type="button">Save profile photo</button>
+          <button class="btn dark" id="saveBtn" type="button">Publish profile photo</button>
           <button class="btn light" id="reloadBtn" type="button">Reload current photo</button>
         </div>
         <div class="msg" id="message"></div>
+        <div class="notice"><strong>New publishing flow:</strong> Admin → Cloudinary permanent profile image → public website. This avoids the “Resource not accessible by personal access token” error for profile-photo changes.</div>
       </div>
     </div>
   </div>
 </div>
-<script type="module">
-import { uploadImageToCloudinary } from '/assets/cloudinary-upload.js';
-
+<script>
 const $ = s => document.querySelector(s);
+const STABLE_URL = 'https://res.cloudinary.com/dwka1eckr/image/upload/ndanji-portfolio/profile-main.jpg';
 const preview = $('#preview');
 const imageUrl = $('#imageUrl');
-const altText = $('#altText');
 const message = $('#message');
 const uploadMsg = $('#uploadMsg');
-let homeDoc = null;
+let selectedFile = null;
 
-function setMsg(el,text,type=''){el.textContent=text;el.className='msg'+(type?' '+type:'')}
-function findProfileImage(doc){
-  return [...doc.querySelectorAll('img')].find(img => (img.getAttribute('alt')||'').toLowerCase().includes('ndanji nachangwa')) || doc.querySelector('.portrait img') || doc.querySelector('img');
+function setMsg(el,text,type=''){el.textContent=text||'';el.className='msg'+(type?' '+type:'')}
+function currentUrl(){return STABLE_URL+'?t='+Date.now()}
+
+async function checkAdmin(){
+  try{
+    const r=await fetch('/api/admin-auth',{cache:'no-store'});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok||!j.authenticated){location.href='/admin.html';return false}
+    return true;
+  }catch{location.href='/admin.html';return false}
 }
-function serialize(){return '<!doctype html>'+homeDoc.documentElement.outerHTML}
 
 async function loadCurrent(){
+  if(!await checkAdmin())return;
   setMsg(message,'Loading current profile photo…');
-  try{
-    const r=await fetch('/api/cms?page=home',{cache:'no-store'});
-    if(r.status===401){location.href='/admin.html';return}
-    const j=await r.json();
-    if(!r.ok)throw new Error(j.error||'Unable to load Home page');
-    homeDoc=new DOMParser().parseFromString(j.html,'text/html');
-    const img=findProfileImage(homeDoc);
-    if(!img)throw new Error('Profile image was not found on the Home page.');
-    const src=img.getAttribute('src')||'';
-    const alt=img.getAttribute('alt')||'Ndanji Nachangwa';
-    imageUrl.value=src;
-    altText.value=alt;
-    preview.src=src;
-    setMsg(message,'Current profile photo loaded.','ok');
-  }catch(e){setMsg(message,e.message,'error')}
+  preview.src=currentUrl();
+  imageUrl.value='';
+  preview.onload=()=>setMsg(message,'Current profile photo loaded.','ok');
+  preview.onerror=()=>setMsg(message,'No permanent profile photo has been published yet. Choose a photo and publish it.','');
 }
 
-async function uploadFile(file){
+async function getUploadSignature(){
+  const r=await fetch('/api/profile-photo-sign',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',cache:'no-store'});
+  const j=await r.json().catch(()=>({}));
+  if(r.status===401){location.href='/admin.html';throw new Error('Admin session expired.')}
+  if(!r.ok)throw new Error(j.error||'Unable to prepare profile photo upload.');
+  return j;
+}
+
+async function uploadProfile(source){
+  const c=await getUploadSignature();
+  const f=new FormData();
+  f.append('file',source);
+  f.append('api_key',c.apiKey);
+  f.append('timestamp',String(c.timestamp));
+  f.append('folder',c.folder);
+  f.append('public_id',c.publicId);
+  f.append('format',c.format);
+  f.append('overwrite',String(c.overwrite));
+  f.append('invalidate',String(c.invalidate));
+  f.append('signature',c.signature);
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),30000);
+  try{
+    const r=await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(c.cloudName)}/image/upload`,{method:'POST',body:f,signal:controller.signal});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(j?.error?.message||'Cloudinary profile upload failed.');
+    return {stableUrl:c.stableUrl,secureUrl:j.secure_url||c.stableUrl};
+  }catch(e){
+    if(e?.name==='AbortError')throw new Error('Profile photo upload timed out. Please try again.');
+    throw e;
+  }finally{clearTimeout(timer)}
+}
+
+function chooseFile(file){
   if(!file)return;
-  setMsg(uploadMsg,'Uploading to Cloudinary…');
-  try{
-    const result=await uploadImageToCloudinary(file);
-    imageUrl.value=result.secureUrl;
-    preview.src=result.secureUrl;
-    setMsg(uploadMsg,'Upload complete. Click Save profile photo to publish it.','ok');
-  }catch(e){setMsg(uploadMsg,e.message,'error')}
+  if(!String(file.type||'').startsWith('image/'))return setMsg(uploadMsg,'Choose an image file.','error');
+  selectedFile=file;
+  imageUrl.value='';
+  preview.src=URL.createObjectURL(file);
+  setMsg(uploadMsg,file.name+' selected. Click Publish profile photo.','ok');
 }
 
-$('#fileInput').addEventListener('change',e=>uploadFile(e.target.files?.[0]));
-$('#dropzone').addEventListener('dragover',e=>{e.preventDefault()});
-$('#dropzone').addEventListener('drop',e=>{e.preventDefault();uploadFile(e.dataTransfer.files?.[0])});
-imageUrl.addEventListener('input',()=>{if(imageUrl.value.trim())preview.src=imageUrl.value.trim()});
+$('#fileInput').addEventListener('change',e=>chooseFile(e.target.files?.[0]));
+$('#dropzone').addEventListener('dragover',e=>e.preventDefault());
+$('#dropzone').addEventListener('drop',e=>{e.preventDefault();chooseFile(e.dataTransfer.files?.[0])});
+imageUrl.addEventListener('input',()=>{const u=imageUrl.value.trim();if(/^https?:\/\//i.test(u)){selectedFile=null;preview.src=u}});
 $('#reloadBtn').addEventListener('click',loadCurrent);
 
 $('#saveBtn').addEventListener('click',async()=>{
-  if(!homeDoc)return setMsg(message,'Load the Home page first.','error');
-  const url=imageUrl.value.trim();
-  if(!/^https?:\/\//i.test(url) && !url.startsWith('/'))return setMsg(message,'Enter a valid image URL.','error');
-  const img=findProfileImage(homeDoc);
-  if(!img)return setMsg(message,'Profile image was not found on the Home page.','error');
-  img.setAttribute('src',url);
-  img.setAttribute('alt',altText.value.trim()||'Ndanji Nachangwa');
-  img.removeAttribute('srcset');
-  $('#saveBtn').disabled=true;
-  setMsg(message,'Publishing profile photo…');
+  const pasted=imageUrl.value.trim();
+  let source=selectedFile;
+  if(!source&&pasted){
+    if(!/^https?:\/\//i.test(pasted))return setMsg(message,'Enter a valid direct image URL.','error');
+    source=pasted;
+  }
+  if(!source)return setMsg(message,'Choose a photo or paste an image URL first.','error');
+
+  const btn=$('#saveBtn');btn.disabled=true;setMsg(message,'Publishing profile photo to Cloudinary…');
   try{
-    const r=await fetch('/api/cms',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({page:'home',html:serialize()})});
-    if(r.status===401){location.href='/admin.html';return}
-    const j=await r.json();
-    if(!r.ok)throw new Error(j.error||'Publish failed');
-    setMsg(message,'Profile photo published successfully. Vercel will redeploy the Home page shortly.','ok');
-  }catch(e){setMsg(message,e.message,'error')}finally{$('#saveBtn').disabled=false}
+    const result=await uploadProfile(source);
+    selectedFile=null;$('#fileInput').value='';imageUrl.value='';
+    preview.src=result.stableUrl+'?t='+Date.now();
+    setMsg(uploadMsg,'');
+    setMsg(message,'Profile photo published successfully. The Profile and About pages now use this permanent Cloudinary image. Refresh the public site after a few seconds.','ok');
+  }catch(e){setMsg(message,e.message||'Unable to publish profile photo.','error')}
+  finally{btn.disabled=false}
 });
 
 loadCurrent();
