@@ -32,7 +32,14 @@
     $('#sbNew').onclick=()=>{try{const d=parse(),T=txt($('#sbTitle').value),B=txt($('#sbBody').value),L=txt($('#sbLabel').value);if(!T&&!B)throw Error('Add a title or description first.');const s=d.createElement('section');s.className='section '+$('#sbTheme').value+' cms-created-section';s.dataset.cmsSection='true';s.dataset.cmsId=id('section');const h=d.createElement('div');h.className='section-head';addText(d,h,'div','section-no','•');const c=d.createElement('div');c.className='section-copy';addText(d,c,'div','eyebrow',L);addText(d,c,'h2','',T);addText(d,c,'p','lead',B);h.appendChild(c);s.appendChild(h);addLink(d,s);const p=d.querySelector('.page')||d.body,f=p.querySelector(':scope > footer');p.insertBefore(s,f||null);save(d,'New section created.')}catch(e){msg(e.message,'error')}};
     $('#sbFile').onchange=e=>{file=e.target.files?.[0]||null;if(file)msg(file.name+' selected. Click Upload image.')};
     $('#sbUpload').onclick=async()=>{if(!file)return msg('Choose an image first.','error');const b=$('#sbUpload');b.disabled=true;msg('Uploading image securely…');try{const r=await window.__ndanjiUploadImage(file);$('#sbImage').value=r.secureUrl;try{const a=JSON.parse(localStorage.getItem(MEDIA)||'[]');a.unshift({...r,createdAt:new Date().toISOString()});localStorage.setItem(MEDIA,JSON.stringify(a.slice(0,50)))}catch{}file=null;$('#sbFile').value='';msg('Image uploaded and ready for this block.','ok')}catch(e){msg(e.message,'error')}finally{b.disabled=false}};
-    $('#sbRefresh').onclick=refresh;nav.onclick=()=>setTimeout(refresh,40);$('#pageSelect')?.addEventListener('change',()=>setTimeout(refresh,700));setTimeout(refresh,300)
+    $('#sbRefresh').onclick=refresh;
+    nav.onclick=()=>{
+      document.querySelectorAll('[data-section]').forEach(b=>b.classList.toggle('active',b===nav));
+      document.querySelectorAll('.workspace > .section').forEach(s=>s.classList.toggle('active',s.id==='section-builder'));
+      setTimeout(refresh,40);
+    };
+    $('#pageSelect')?.addEventListener('change',()=>setTimeout(refresh,700));
+    setTimeout(refresh,300)
   }
   init();
 })();
