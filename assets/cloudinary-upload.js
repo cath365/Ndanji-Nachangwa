@@ -1,3 +1,25 @@
+function addProfilePhotoNavLink() {
+  const nav = document.querySelector('.nav');
+  if (!nav || nav.querySelector('[data-profile-photo-link]')) return;
+
+  const link = document.createElement('a');
+  link.href = '/profile-image.html';
+  link.textContent = 'Profile Photo';
+  link.setAttribute('data-profile-photo-link', 'true');
+
+  const viewPortfolio = [...nav.querySelectorAll('a')].find((a) => a.getAttribute('href') === '/');
+  if (viewPortfolio) nav.insertBefore(link, viewPortfolio);
+  else nav.appendChild(link);
+}
+
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addProfilePhotoNavLink, { once: true });
+  } else {
+    addProfilePhotoNavLink();
+  }
+}
+
 export async function uploadImageToCloudinary(file) {
   if (!(file instanceof File)) {
     throw new TypeError('A valid image File is required.');
