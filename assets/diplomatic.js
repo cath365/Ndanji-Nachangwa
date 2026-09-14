@@ -1,24 +1,35 @@
 (function(){
   function ensureRecognitionStyles(){
-    if(document.querySelector('link[href="/assets/engagements.css"]')) return;
+    if(document.querySelector('link[href^="/assets/engagements.css"]')) return;
     var link=document.createElement('link');
     link.rel='stylesheet';
     link.href='/assets/engagements.css';
     document.head.appendChild(link);
   }
 
+  function ensureLaptopStyles(){
+    if(document.querySelector('link[data-laptop-fit]')) return;
+    var fit=document.createElement('link');
+    fit.rel='stylesheet';
+    fit.href='/assets/laptop-fit.css?v=2';
+    fit.setAttribute('data-laptop-fit','true');
+    document.head.appendChild(fit);
+  }
+
   function enhancePublicNavigation(){
-    var nav=document.querySelector('[data-nav]');
-    if(nav&&!nav.querySelector('a[href="/engagements.html"]')){
-      var link=document.createElement('a');
-      link.href='/engagements.html';
-      link.textContent='Engagements';
-      var publications=nav.querySelector('a[href="/insights.html"]');
-      if(publications) nav.insertBefore(link,publications); else nav.appendChild(link);
-    }
-    var path=(location.pathname||'/').toLowerCase();
-    document.querySelectorAll('[data-nav] a').forEach(function(a){
-      if(path.endsWith('/engagements.html')) a.classList.toggle('active',a.getAttribute('href')==='/engagements.html');
+    document.querySelectorAll('[data-nav]').forEach(function(nav){
+      if(!nav.querySelector('a[href="/engagements.html"]')){
+        var link=document.createElement('a');
+        link.href='/engagements.html';
+        link.textContent='Engagements';
+        var publications=nav.querySelector('a[href="/insights.html"]');
+        if(publications) nav.insertBefore(link,publications); else nav.appendChild(link);
+      }
+      var path=(location.pathname||'/').replace(/\/$/,'')||'/';
+      nav.querySelectorAll('a[href]').forEach(function(a){
+        var href=(a.getAttribute('href')||'').replace(/\/$/,'')||'/';
+        a.classList.toggle('active',href===path);
+      });
     });
 
     document.querySelectorAll('.footer-links').forEach(function(group){
@@ -46,7 +57,7 @@
         <div>
           <div class="eyebrow">Engagements & recognition</div>
           <h2>A record built for the rooms that matter.</h2>
-          <p>Beyond a conventional portfolio, Ndanji's public record now brings together programme leadership, field work, professional development, mentorship and thought leadership in one formal dossier. The emphasis is on evidence, service and institutional readiness.</p>
+          <p>Beyond a conventional portfolio, Ndanji's public record brings together programme leadership, field work, professional development, mentorship and thought leadership in one formal dossier. The emphasis is on evidence, service and institutional readiness.</p>
           <div class="mini-records">
             <div class="mini-record"><b>Technovation Girls</b><span>Volunteer coaching within a cohort whose senior team reached the Global Semifinals.</span></div>
             <div class="mini-record"><b>Northmead STEAM</b><span>40 Grade 6 learners and five functional prototypes.</span></div>
@@ -60,15 +71,21 @@
   }
 
   ensureRecognitionStyles();
+  ensureLaptopStyles();
   enhancePublicNavigation();
   addHomeRecognitionFeature();
 
   var menu=document.querySelector('[data-menu]');
   var nav=document.querySelector('[data-nav]');
   if(menu&&nav){
-    menu.addEventListener('click',function(){nav.classList.toggle('open')});
-    nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){nav.classList.remove('open')})});
+    menu.setAttribute('aria-expanded','false');
+    menu.addEventListener('click',function(){
+      var open=nav.classList.toggle('open');
+      menu.setAttribute('aria-expanded',String(open));
+    });
+    nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){nav.classList.remove('open');menu.setAttribute('aria-expanded','false')})});
   }
+
   function bytesFromBase64(b64){
     b64=b64.replace(/[^A-Za-z0-9+/=]/g,'');
     var pad=(4-b64.length%4)%4;b64+='='.repeat(pad);
