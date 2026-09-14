@@ -11,5 +11,9 @@ export async function uploadImageToCloudinary(file){
 }
 if(typeof window!=='undefined'){
   window.__ndanjiUploadImage=uploadImageToCloudinary;
-  import('/assets/section-builder.js').catch(()=>{});
+  const path=(window.location.pathname||'').toLowerCase();
+  if(path.endsWith('/admin.html')||path==='/admin'){
+    import('/assets/section-builder.js?v=2').catch(()=>{});
+    import('/assets/admin-power.js?v=1').catch(()=>{});
+  }
 }
