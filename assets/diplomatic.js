@@ -16,6 +16,23 @@
     document.head.appendChild(fit);
   }
 
+  function ensurePremiumLayer(){
+    if(!document.querySelector('link[data-premium-polish]')){
+      var style=document.createElement('link');
+      style.rel='stylesheet';
+      style.href='/assets/premium-polish.css?v=1';
+      style.setAttribute('data-premium-polish','true');
+      document.head.appendChild(style);
+    }
+    if(!document.querySelector('script[data-premium-polish]')){
+      var script=document.createElement('script');
+      script.src='/assets/premium-polish.js?v=1';
+      script.defer=true;
+      script.setAttribute('data-premium-polish','true');
+      document.head.appendChild(script);
+    }
+  }
+
   function enhancePublicNavigation(){
     document.querySelectorAll('[data-nav]').forEach(function(nav){
       if(!nav.querySelector('a[href="/engagements.html"]')){
@@ -96,6 +113,7 @@
 
   ensureRecognitionStyles();
   ensureLaptopStyles();
+  ensurePremiumLayer();
   enhancePublicNavigation();
   addHomeRecognitionFeature();
   protectProfileImages();
