@@ -1,32 +1,32 @@
 /* Laptop and CMS-added content refinements for Ndanji Nachangwa's public portfolio */
-html,body{max-width:100%;overflow-x:hidden}.page{width:100%;max-width:1600px}.masthead>*{min-width:0}.hero>*{min-width:0}.section>*{min-width:0}.footer-main>*{min-width:0}
+html,body{max-width:100%;overflow-x:hidden;background:var(--ivory)}.page{width:100%;max-width:none;margin:0;background:var(--ivory)}.masthead>*{min-width:0}.hero>*{min-width:0}.section>*{min-width:0}.footer-main>*{min-width:0}
 
 /* Safe blocks created from the private CMS Section Builder */
 .cms-added-block{margin-top:24px}.cms-content-block{max-width:980px;padding:22px 0;border-top:1px solid var(--line)}.cms-content-block .eyebrow{margin-bottom:8px}.cms-content-block h3{font-size:clamp(1.8rem,3vw,2.7rem);margin:0 0 10px;color:var(--navy)}.cms-content-block p{margin:0;color:#58677d;line-height:1.75}.navy .cms-content-block h3{color:#fff}.navy .cms-content-block p{color:#d5deeb}.cms-list{margin:12px 0 0;padding-left:20px;color:#58677d;line-height:1.8}.navy .cms-list{color:#d5deeb}.cms-media-block{display:grid;grid-template-columns:minmax(260px,.85fr) minmax(0,1.15fr);gap:0;background:#fff;border:1px solid var(--line);margin:26px 0 0}.cms-media-block img{width:100%;height:100%;min-height:300px;object-fit:cover}.cms-media-caption{padding:28px}.cms-media-caption h3{font-size:2rem;margin:0 0 9px;color:var(--navy)}.cms-media-caption p{margin:0;color:#58677d;line-height:1.7}.cms-stat-block{padding:24px;border-left:3px solid var(--gold);background:#fff;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line);max-width:520px}.cms-stat-block strong{display:block;font:600 2.7rem 'Cormorant Garamond',serif;color:var(--navy)}.cms-stat-block span{display:block;text-transform:uppercase;letter-spacing:.09em;font-size:.68rem;color:var(--gold);font-weight:800}.cms-stat-block p{margin:8px 0 0;color:#58677d;line-height:1.6}.cms-created-section{position:relative}.cms-created-section:before{content:'CMS';position:absolute;right:clamp(20px,5vw,70px);top:24px;font:600 .6rem Inter,sans-serif;letter-spacing:.18em;color:rgba(185,151,89,.55)}
 
-/* 1366×768, 1280×720 and similar laptop screens */
+/* 1366x768, 1280x720 and similar laptop screens */
 @media (min-width:901px) and (max-width:1500px){
   .page{max-width:none}
   .masthead{grid-template-columns:minmax(185px,auto) minmax(0,1fr) auto;gap:clamp(12px,1.4vw,21px);padding:11px clamp(18px,2.7vw,38px)}
   .seal{width:42px;height:42px}.brandblock strong{font-size:.96rem}.brandblock span{font-size:.55rem;letter-spacing:.13em}
-  .navlinks{gap:clamp(10px,1.25vw,18px);font-size:clamp(.56rem,.61vw,.66rem);letter-spacing:.065em}.navlinks a{padding:7px 0}.connect{padding:9px 12px;font-size:.6rem;letter-spacing:.065em}
+  .navlinks{gap:clamp(10px,1.25vw,18px);font-size:clamp(.62rem,.66vw,.7rem);letter-spacing:.065em}.navlinks a{padding:7px 0}.connect{padding:9px 12px;font-size:.62rem;letter-spacing:.065em}
   .hero{min-height:calc(100svh - 69px);grid-template-columns:1.06fr .94fr}.hero:before{top:28px}.hero-copy{padding:clamp(48px,6.5vh,72px) clamp(32px,4vw,58px)}
-  h1{font-size:clamp(4.1rem,7.1vw,6.75rem);margin:17px 0 19px}.hero-role{font-size:clamp(.9rem,1.35vw,1.14rem)}.hero-summary{font-size:.91rem;line-height:1.72;max-width:650px}.statement{font-size:clamp(1.15rem,1.7vw,1.55rem);margin-top:17px;padding-top:14px}.actions{margin-top:20px}.btn{padding:10px 15px;font-size:.63rem}
-  .hero-visual{padding:30px 34px}.portrait-frame{width:min(89%,470px);height:min(560px,72svh)}.portrait-label{left:20px;bottom:20px;padding:12px 15px;max-width:235px}
-  .brief{padding:20px clamp(18px,2.2vw,28px)}.brief strong{font-size:2.2rem}.brief span{font-size:.66rem}.brief small{font-size:.72rem}
-  .section{padding:clamp(56px,5.5vw,80px) clamp(32px,4vw,60px)}.section-head{gap:24px;margin-bottom:31px}.section-no{font-size:2.7rem}.section-copy h2{font-size:clamp(2.8rem,4.45vw,4.7rem)}.lead{font-size:.93rem;line-height:1.72}
-  .dossier-grid,.image-grid,.engagement-grid{gap:13px}.dossier{padding:22px;min-height:220px}.dossier .label{margin-bottom:18px}.dossier h3{font-size:1.55rem}.dossier p{font-size:.9rem;line-height:1.62}
-  .profile-grid{gap:28px}.quote-panel{padding:28px}.principle{padding:13px 0}.case-row{padding:19px 0;gap:18px}.case-row h3{font-size:1.55rem}.case-row p{font-size:.9rem}.visual-copy{padding:17px}.publication-art{min-height:300px}.publication{gap:26px}
-  .page-hero{padding:68px clamp(32px,4vw,60px) 48px}.page-hero h1{font-size:clamp(3.7rem,6.2vw,6.15rem);margin:13px 0 16px}.page-hero p{font-size:.93rem;line-height:1.72}
-  .timeline-item{grid-template-columns:150px 1fr;gap:22px;padding:21px 0}.timeline-item h3{font-size:1.62rem}
-  .footer-main{padding:42px clamp(32px,4vw,60px) 32px;gap:27px}.footer-bottom{padding:14px clamp(32px,4vw,60px)}
-  .recognition-hero{padding:72px clamp(32px,4vw,60px) 56px}.recognition-ribbon .record{padding:20px 24px}.recognition-ribbon strong{font-size:2.15rem}.record-ledger{grid-template-columns:180px 1fr;gap:25px}.ledger-item{grid-template-columns:130px 1fr auto;gap:18px;padding:22px 0}.ledger-item h3{font-size:1.58rem}.distinction{padding:24px;min-height:240px}.distinction h3{font-size:1.65rem}.record-quote{padding:29px}.protocol{padding:22px}.recognition-home{padding:60px clamp(32px,4vw,60px)}
+  h1{font-size:clamp(4.1rem,7.1vw,6.75rem);margin:17px 0 19px}.hero-role{font-size:clamp(.95rem,1.35vw,1.16rem)}.hero-summary{font-size:.96rem;line-height:1.72;max-width:680px}.statement{font-size:clamp(1.18rem,1.7vw,1.58rem);margin-top:17px;padding-top:14px}.actions{margin-top:20px}.btn{padding:10px 15px;font-size:.65rem}
+  .hero-visual{padding:30px 34px}.portrait-frame{width:min(91%,500px);height:min(570px,72svh)}.portrait-label{left:20px;bottom:20px;padding:12px 15px;max-width:245px}
+  .brief{padding:20px clamp(18px,2.2vw,28px)}.brief strong{font-size:2.3rem}.brief span{font-size:.68rem}.brief small{font-size:.75rem}
+  .section{padding:clamp(56px,5.5vw,80px) clamp(34px,4.4vw,68px)}.section-head{gap:24px;margin-bottom:31px}.section-no{font-size:2.7rem}.section-copy h2{font-size:clamp(2.9rem,4.45vw,4.8rem)}.lead{font-size:.97rem;line-height:1.72}
+  .dossier-grid,.image-grid,.engagement-grid{gap:13px}.dossier{padding:22px;min-height:220px}.dossier .label{margin-bottom:18px}.dossier h3{font-size:1.58rem}.dossier p{font-size:.93rem;line-height:1.64}
+  .profile-grid{gap:28px}.quote-panel{padding:28px}.principle{padding:13px 0}.case-row{padding:19px 0;gap:18px}.case-row h3{font-size:1.58rem}.case-row p{font-size:.93rem}.visual-copy{padding:17px}.publication-art{min-height:300px}.publication{gap:26px}
+  .page-hero{padding:68px clamp(34px,4.4vw,68px) 48px}.page-hero h1{font-size:clamp(3.8rem,6.2vw,6.2rem);margin:13px 0 16px}.page-hero p{font-size:.97rem;line-height:1.72}
+  .timeline-item{grid-template-columns:150px 1fr;gap:22px;padding:21px 0}.timeline-item h3{font-size:1.65rem}
+  .footer-main{padding:42px clamp(34px,4.4vw,68px) 32px;gap:27px}.footer-bottom{padding:14px clamp(34px,4.4vw,68px)}
+  .recognition-hero{padding:72px clamp(34px,4.4vw,68px) 56px}.recognition-ribbon .record{padding:20px 24px}.recognition-ribbon strong{font-size:2.15rem}.record-ledger{grid-template-columns:180px 1fr;gap:25px}.ledger-item{grid-template-columns:130px 1fr auto;gap:18px;padding:22px 0}.ledger-item h3{font-size:1.58rem}.distinction{padding:24px;min-height:240px}.distinction h3{font-size:1.65rem}.record-quote{padding:29px}.protocol{padding:22px}.recognition-home{padding:60px clamp(34px,4.4vw,68px)}
 }
 
 /* Override the older tablet breakpoint so 1024px laptops keep the desktop composition. */
 @media (min-width:901px) and (max-width:1050px){
   .masthead{grid-template-columns:auto minmax(0,1fr) auto}.menu{display:none}.navlinks{position:static;left:auto;right:auto;top:auto;background:transparent;border:0;padding:0;display:flex;flex-direction:row;box-shadow:none}.connect{justify-self:auto}
-  .brandblock span{display:none}.identity{gap:8px}.seal{width:38px;height:38px}.brandblock strong{font-size:.82rem}.navlinks{gap:8px;font-size:.54rem}.connect{padding:8px 9px;font-size:.55rem}
+  .brandblock span{display:none}.identity{gap:8px}.seal{width:38px;height:38px}.brandblock strong{font-size:.82rem}.navlinks{gap:8px;font-size:.58rem}.connect{padding:8px 9px;font-size:.57rem}
   .hero{grid-template-columns:1.02fr .98fr}.hero-visual{min-height:0}.hero-copy{padding-left:28px;padding-right:28px}h1{font-size:clamp(3.9rem,6.8vw,5.45rem)}.portrait-frame{height:min(520px,69svh)}
   .briefing{grid-template-columns:repeat(4,1fr)}.brief:nth-child(2){border-right:1px solid var(--line)}
   .profile-grid,.publication{grid-template-columns:.95fr 1.05fr}.dossier-grid,.image-grid,.engagement-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.section-head{grid-template-columns:74px 1fr}.footer-main{grid-template-columns:1.2fr .7fr .7fr 1fr}
@@ -35,6 +35,16 @@ html,body{max-width:100%;overflow-x:hidden}.page{width:100%;max-width:1600px}.ma
 
 @media (min-width:901px) and (max-height:800px){
   .hero{min-height:calc(100svh - 66px)}.hero-copy{padding-top:40px;padding-bottom:40px}.hero:before{top:20px}h1{font-size:clamp(3.9rem,6.65vw,6rem);margin-top:14px;margin-bottom:16px}.hero-summary{margin-top:8px;margin-bottom:7px;line-height:1.62}.statement{margin-top:13px;padding-top:12px}.actions{margin-top:17px}.portrait-frame{height:min(500px,67svh)}.portrait-label{bottom:14px}.brief{padding-top:16px;padding-bottom:16px}
+}
+
+/* Large laptops and desktop monitors: fill the browser instead of appearing as a narrow centred sheet. */
+@media (min-width:1501px){
+  .masthead{padding-left:clamp(54px,5vw,96px);padding-right:clamp(54px,5vw,96px)}
+  .hero-copy{padding-left:clamp(70px,6vw,118px);padding-right:clamp(60px,5vw,100px)}
+  .hero-visual{padding-left:clamp(42px,4vw,76px);padding-right:clamp(42px,4vw,76px)}
+  .section,.page-hero,.recognition-hero,.recognition-home{padding-left:clamp(70px,6vw,118px);padding-right:clamp(70px,6vw,118px)}
+  .footer-main,.footer-bottom{padding-left:clamp(70px,6vw,118px);padding-right:clamp(70px,6vw,118px)}
+  .navlinks{font-size:.7rem;gap:clamp(18px,1.5vw,28px)}
 }
 
 @media (max-width:900px){
