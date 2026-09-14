@@ -40,5 +40,6 @@ if(typeof window!=='undefined'){
   if(path.endsWith('/admin.html')||path==='/admin'){
     import('/assets/section-builder.js?v=3').catch(()=>{});
     import('/assets/admin-power.js?v=2').catch(()=>{});
+    import('/assets/admin-extras.js?v=1').catch(()=>{});
   }
 }
