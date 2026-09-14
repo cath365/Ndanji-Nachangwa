@@ -1,6 +1,7 @@
-import { uploadImageToCloudinary } from '/assets/cloudinary-upload.js';
+import { uploadAssetToCloudinary, uploadImageToCloudinary } from '/assets/cloudinary-upload.js';
 
 window.__ndanjiUploadImage = uploadImageToCloudinary;
+window.__ndanjiUploadAsset = uploadAssetToCloudinary;
 
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
@@ -48,8 +49,13 @@ function installOverviewGuide(){
   const panel=$('#section-overview .panel');
   if(!panel||$('#powerGuide'))return;
   const box=document.createElement('div');box.id='powerGuide';box.className='notice blue';box.style.marginTop='16px';
-  box.innerHTML='<strong>Full control:</strong> Content edits existing wording. Section Builder adds new information anywhere. Media replaces normal images and special artwork. SEO controls search/social previews. Version History restores previous public versions.';
+  box.innerHTML='<strong>Full control:</strong> Content edits existing wording. Section Builder adds new information to any page area. It supports text, cards, testimonials, images, video, documents, links, lists and statistics. Media replaces existing images. SEO controls search/social previews. Version History restores previous public versions.';
   panel.appendChild(box);
+  const quick=panel.querySelector('.quick');
+  if(quick&&!quick.querySelector('[data-open-builder]')){
+    const b=document.createElement('button');b.className='quick-card';b.type='button';b.setAttribute('data-open-builder','true');b.innerHTML='<b>Section Builder</b><span>Add completely new information, media, files or a new public section without touching HTML.</span>';
+    b.addEventListener('click',()=>document.querySelector('[data-section="builder"]')?.click());quick.appendChild(b);
+  }
 }
 
 const templates={
@@ -58,7 +64,11 @@ const templates={
   publication:{type:'text',label:'Publication • Thought leadership',title:'Publication title',body:'Add a concise summary of the article, paper or public reflection.',linkText:'Read publication'},
   credential:{type:'card',label:'Credential • Professional development',title:'Qualification or certificate',body:'Add the issuing institution, year and why this credential matters.',linkText:'View credential'},
   testimonial:{type:'quote',label:'Professional recommendation',title:'',body:'Paste an approved genuine testimonial or recommendation here.'},
-  media:{type:'image',label:'Field record',title:'Photo story title',body:'Explain what is happening in this image, the context and why it matters.',linkText:''}
+  media:{type:'image',label:'Field record',title:'Photo story title',body:'Explain what is happening in this image, the context and why it matters.',linkText:''},
+  video:{type:'video',label:'Video record',title:'Video title',body:'Add context explaining the programme, event or work shown in this video.',linkText:''},
+  document:{type:'document',label:'Professional resource',title:'Document title',body:'Explain what this document contains and why it is relevant.',linkText:'Open document'},
+  speaking:{type:'card',label:'Speaking • Public engagement',title:'Event / panel / workshop',body:'Add the host institution, audience, topic, Ndanji’s contribution and the outcome.',linkText:'View engagement'},
+  milestone:{type:'stat',label:'Verified result',title:'00',body:'Explain what this number represents and why it matters.',linkText:''}
 };
 function fillTemplate(key){
   const t=templates[key];if(!t)return;
@@ -69,10 +79,16 @@ function installBuilderTemplates(){
   const builder=$('#section-builder .panel');
   if(!builder||$('#builderTemplates'))return;
   const box=document.createElement('div');box.id='builderTemplates';box.className='builder-templates';
-  box.innerHTML='<div class="small"><strong>Quick templates</strong> — start with a professional structure, then replace the placeholder text.</div><div class="template-buttons"><button class="btn light" data-template="achievement">Achievement</button><button class="btn light" data-template="engagement">Engagement</button><button class="btn light" data-template="publication">Publication</button><button class="btn light" data-template="credential">Credential</button><button class="btn light" data-template="testimonial">Testimonial</button><button class="btn light" data-template="media">Photo story</button></div>';
+  box.innerHTML='<div class="small"><strong>Quick templates</strong> — choose a professional structure, then replace the placeholder wording with verified information.</div><div class="template-buttons"><button class="btn light" data-template="achievement">Achievement</button><button class="btn light" data-template="engagement">Engagement</button><button class="btn light" data-template="speaking">Speaking</button><button class="btn light" data-template="publication">Publication</button><button class="btn light" data-template="credential">Credential</button><button class="btn light" data-template="testimonial">Testimonial</button><button class="btn light" data-template="media">Photo story</button><button class="btn light" data-template="video">Video</button><button class="btn light" data-template="document">Document</button><button class="btn light" data-template="milestone">Statistic</button></div>';
   const firstField=builder.querySelector('.field');
   builder.insertBefore(box,firstField||builder.firstChild);
   $$('[data-template]',box).forEach(b=>b.addEventListener('click',()=>fillTemplate(b.dataset.template)));
+
+  if(!$('#builderCapabilities')){
+    const cap=document.createElement('div');cap.id='builderCapabilities';cap.className='builder-capabilities';
+    cap.innerHTML='<b>Publish to any section:</b><span>Text</span><span>Cards</span><span>Testimonials</span><span>Images</span><span>Video</span><span>PDF / documents</span><span>Links</span><span>Lists</span><span>Statistics</span><span>New sections</span>';
+    box.insertAdjacentElement('afterend',cap);
+  }
 }
 
 function replaceArtwork(index,url){
@@ -109,7 +125,9 @@ function installStyles(){
   if($('#adminPowerStyles'))return;
   const style=document.createElement('style');style.id='adminPowerStyles';style.textContent=`
   .builder-templates{padding:14px;border:1px solid rgba(7,23,46,.1);background:#f8f3e8;margin-bottom:15px}.template-buttons{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.template-buttons .btn{min-height:34px;padding:7px 10px;font-size:.58rem}
+  .builder-capabilities{display:flex;gap:7px;flex-wrap:wrap;align-items:center;padding:12px 0 4px;margin-bottom:12px}.builder-capabilities>b{font-size:.7rem;color:#07172e;margin-right:3px}.builder-capabilities span{padding:6px 8px;border:1px solid rgba(7,23,46,.1);background:#fffefa;font-size:.58rem;text-transform:uppercase;letter-spacing:.06em;color:#66758b}
   .special-art-row{display:grid;grid-template-columns:minmax(180px,.65fr) minmax(0,1.35fr);gap:14px;padding:13px 0;border-bottom:1px solid rgba(7,23,46,.11)}.special-art-row:last-child{border-bottom:0}.special-art-row b{display:block;font:600 1.15rem 'Cormorant Garamond',serif;color:#07172e}.special-art-row small{display:block;margin-top:4px;color:#78859a;font-size:.64rem;overflow-wrap:anywhere}.special-art-controls{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:7px;align-items:center}
+  #section-overview .quick{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
   @media(max-width:760px){.special-art-row,.special-art-controls{grid-template-columns:1fr}.template-buttons .btn{flex:1 1 42%}}
   `;document.head.appendChild(style);
 }
