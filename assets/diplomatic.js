@@ -96,6 +96,22 @@
     footer.parentNode.insertBefore(section,footer);
   }
 
+  function refreshManagedProfilePhoto(){
+    var stamp=Date.now();
+    document.querySelectorAll('img[src*="res.cloudinary.com"][src*="/ndanji-portfolio/profile-main"]').forEach(function(img){
+      if(img.dataset.profileRefresh==='true') return;
+      img.dataset.profileRefresh='true';
+      try{
+        var url=new URL(img.getAttribute('src'),location.href);
+        url.searchParams.set('profile_refresh',String(stamp));
+        img.src=url.toString();
+      }catch(e){
+        var src=img.getAttribute('src')||'';
+        img.src=src+(src.indexOf('?')>=0?'&':'?')+'profile_refresh='+stamp;
+      }
+    });
+  }
+
   function protectProfileImages(){
     if(!document.querySelector('#portrait-fallback-styles')){
       var style=document.createElement('style');
@@ -145,6 +161,7 @@
   ensurePremiumLayer();
   enhancePublicNavigation();
   addHomeRecognitionFeature();
+  refreshManagedProfilePhoto();
   protectProfileImages();
   addDiscreetAdminPortal();
 
