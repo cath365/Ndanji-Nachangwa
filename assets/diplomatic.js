@@ -71,6 +71,12 @@
   }
 
   function protectProfileImages(){
+    if(!document.querySelector('#portrait-fallback-styles')){
+      var style=document.createElement('style');
+      style.id='portrait-fallback-styles';
+      style.textContent='.portrait-fallback{position:absolute;inset:10px;display:grid;place-items:center;text-align:center;background:linear-gradient(145deg,#cdb47f,#9f7a3e);color:#07172e;padding:34px;overflow:hidden}.portrait-fallback:before{content:"";position:absolute;inset:18px;border:1px solid rgba(255,255,255,.6)}.portrait-fallback-mark{position:relative;font:600 clamp(6rem,12vw,11rem) "Cormorant Garamond",serif;color:#f7f3e8;line-height:.8}.portrait-fallback-copy{position:relative;margin-top:18px;padding-top:14px;border-top:1px solid rgba(7,23,46,.3);max-width:270px}.portrait-fallback-copy strong{display:block;font-family:"Cormorant Garamond",serif;font-size:1.35rem}.portrait-fallback-copy span{display:block;margin-top:5px;font-size:.7rem;line-height:1.5;color:#25344d}';
+      document.head.appendChild(style);
+    }
     document.querySelectorAll('.portrait-frame img').forEach(function(img){
       if(img.dataset.fallbackReady==='true') return;
       img.dataset.fallbackReady='true';
@@ -80,7 +86,7 @@
         img.style.display='none';
         var fallback=document.createElement('div');
         fallback.className='portrait-fallback';
-        fallback.innerHTML='<div class="portrait-fallback-mark">NN</div><div class="portrait-fallback-copy"><strong>Ndanji Nachangwa</strong><span>Professional portrait can be updated from the private portfolio admin.</span></div>';
+        fallback.innerHTML='<div><div class="portrait-fallback-mark">NN</div><div class="portrait-fallback-copy"><strong>Ndanji Nachangwa</strong><span>Professional portrait can be updated from the private portfolio admin.</span></div></div>';
         frame.insertBefore(fallback,frame.firstChild);
       }
       img.addEventListener('error',showFallback,{once:true});
