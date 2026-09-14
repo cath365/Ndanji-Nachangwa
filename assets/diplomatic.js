@@ -16,6 +16,15 @@
     document.head.appendChild(fit);
   }
 
+  function ensureCmsBlockStyles(){
+    if(document.querySelector('link[data-cms-blocks]')) return;
+    var style=document.createElement('link');
+    style.rel='stylesheet';
+    style.href='/assets/cms-blocks.css?v=1';
+    style.setAttribute('data-cms-blocks','true');
+    document.head.appendChild(style);
+  }
+
   function ensurePremiumLayer(){
     if(!document.querySelector('link[data-premium-polish]')){
       var style=document.createElement('link');
@@ -113,6 +122,7 @@
 
   ensureRecognitionStyles();
   ensureLaptopStyles();
+  ensureCmsBlockStyles();
   ensurePremiumLayer();
   enhancePublicNavigation();
   addHomeRecognitionFeature();
