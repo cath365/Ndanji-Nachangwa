@@ -40,6 +40,7 @@ if(typeof window!=='undefined'){
   if(path.endsWith('/admin.html')||path==='/admin'){
     import('/assets/login-hotfix.js?v=4').catch(()=>{});
     import('/assets/section-builder.js?v=3').catch(()=>{});
+    import('/assets/work-gallery-admin.js?v=1').catch(()=>{});
     import('/assets/admin-power-safe.js?v=1').catch(()=>{});
     import('/assets/admin-extras.js?v=1').catch(()=>{});
   }
