@@ -37,8 +37,9 @@
     section.innerHTML=`
       <div class="grid-2">
         <div class="panel">
-          <div class="panel-head"><div><div class="eyebrow">Professional assets</div><h2>CV Manager</h2><p class="small">Upload a PDF once, then the public portfolio will show a Download CV button across the site.</p></div><span class="badge ok">Cloudinary + GitHub</span></div>
+          <div class="panel-head"><div><div class="eyebrow">Professional assets</div><h2>CV Manager</h2><p class="small">Upload a PDF once. The CV is stored with the public portfolio so it opens reliably on phones and laptops.</p></div><span class="badge ok">GitHub + Vercel</span></div>
           <div class="field"><label for="profCvFile">CV / résumé PDF</label><input id="profCvFile" type="file" accept="application/pdf,.pdf"></div>
+          <div class="notice" style="margin-top:10px">For reliable public delivery, keep the PDF below 3 MB. Re-upload the CV once if an older Cloudinary CV link does not open.</div>
           <div class="actions" style="margin-top:12px"><button class="btn gold" id="profCvUpload">Upload & make public</button><a class="btn light hidden" id="profCvOpen" target="_blank" rel="noopener">Open current CV</a><button class="btn danger" id="profCvRemove" type="button">Remove public CV</button></div>
           <div class="field" style="margin-top:14px"><label for="profCvUrl">Current CV URL</label><input id="profCvUrl" type="text" placeholder="No public CV uploaded yet"></div>
           <div class="field"><label for="profCvLabel">Public button label</label><input id="profCvLabel" type="text" value="Download CV"></div>
@@ -70,10 +71,36 @@
     async function load(){msg('#profMsg','Loading public profile…');try{const r=await fetch('/api/portfolio-config',{cache:'no-store'}),d=await r.json();if(r.status===401)return;if(!r.ok)throw new Error(d.error||'Unable to load profile configuration.');fill(d.config||{});msg('#profMsg','Public profile settings loaded.','ok')}catch(e){msg('#profMsg',e.message,'error')}}
     async function save(overrides={},messageTarget='#profMsg'){const payload={...readForm(),...overrides};msg(messageTarget,'Saving and preparing deployment…');try{const r=await fetch('/api/portfolio-config',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),d=await r.json();if(!r.ok)throw new Error(d.error||'Unable to save public profile.');fill(d.config||payload);const suffix=d.deployment?.triggered?' Public deployment triggered.':' GitHub updated; Git-connected Vercel deployment should follow.';msg(messageTarget,'Saved.'+suffix,'ok');return d.config||payload}catch(e){msg(messageTarget,e.message,'error');throw e}}
 
+    function fileToBase64(file){
+      return new Promise((resolve,reject)=>{
+        const reader=new FileReader();
+        reader.onload=()=>{const value=String(reader.result||'');resolve(value.includes(',')?value.split(',').pop():value)};
+        reader.onerror=()=>reject(new Error('Unable to read the selected PDF.'));
+        reader.readAsDataURL(file);
+      });
+    }
+
     $('#profSave').onclick=()=>save();
     $('#profCvUrl').addEventListener('input',syncLinks);$('#profLinkedIn').addEventListener('input',syncLinks);
-    $('#profCvRemove').onclick=async()=>{if(!$('#profCvUrl').value.trim())return msg('#profCvMsg','There is no public CV to remove.','warn');if(!confirm('Remove the Download CV button from the public portfolio? The Cloudinary file itself will not be deleted.'))return;$('#profCvUrl').value='';syncLinks();try{await save({cvUrl:''},'#profCvMsg')}catch{}};
-    $('#profCvUpload').onclick=async()=>{const file=$('#profCvFile').files?.[0];if(!file)return msg('#profCvMsg','Choose a PDF first.','error');if(file.type!=='application/pdf'&&!/\.pdf$/i.test(file.name))return msg('#profCvMsg','Please choose a PDF CV.','error');if(!window.__ndanjiUploadAsset)return msg('#profCvMsg','Uploader is not ready. Reload the Admin page.','error');const b=$('#profCvUpload');b.disabled=true;msg('#profCvMsg','Uploading CV securely…');try{const uploaded=await window.__ndanjiUploadAsset(file);$('#profCvUrl').value=uploaded.secureUrl;syncLinks();await save({cvUrl:uploaded.secureUrl},'#profCvMsg');$('#profCvFile').value=''}catch(e){msg('#profCvMsg',e.message||'CV upload failed.','error')}finally{b.disabled=false}};
+    $('#profCvRemove').onclick=async()=>{if(!$('#profCvUrl').value.trim())return msg('#profCvMsg','There is no public CV to remove.','warn');if(!confirm('Remove the Download CV button from the public portfolio? The stored PDF will remain in the repository.'))return;$('#profCvUrl').value='';syncLinks();try{await save({cvUrl:''},'#profCvMsg')}catch{}};
+    $('#profCvUpload').onclick=async()=>{
+      const file=$('#profCvFile').files?.[0];
+      if(!file)return msg('#profCvMsg','Choose a PDF first.','error');
+      if(file.type!=='application/pdf'&&!/\.pdf$/i.test(file.name))return msg('#profCvMsg','Please choose a PDF CV.','error');
+      if(file.size>3*1024*1024)return msg('#profCvMsg','Please keep the CV PDF below 3 MB.','error');
+      const b=$('#profCvUpload');b.disabled=true;msg('#profCvMsg','Uploading CV to the public portfolio…');
+      try{
+        const dataBase64=await fileToBase64(file);
+        const r=await fetch('/api/cv-upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dataBase64,fileName:file.name})});
+        const d=await r.json();
+        if(!r.ok)throw new Error(d.error||'CV upload failed.');
+        $('#profCvUrl').value=d.cvUrl;
+        syncLinks();
+        await save({cvUrl:d.cvUrl},'#profCvMsg');
+        $('#profCvFile').value='';
+        msg('#profCvMsg','CV uploaded successfully. After the Vercel deployment finishes, Open current CV and Download CV will use the new public PDF.','ok');
+      }catch(e){msg('#profCvMsg',e.message||'CV upload failed.','error')}finally{b.disabled=false}
+    };
 
     nav.onclick=()=>{document.querySelectorAll('[data-section]').forEach(b=>b.classList.toggle('active',b===nav));document.querySelectorAll('.workspace > .section').forEach(s=>s.classList.toggle('active',s===section));load();};
     load();
