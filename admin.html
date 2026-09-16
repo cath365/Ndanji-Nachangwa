@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#07172e">
 <title>Portfolio Command Center | Ndanji Nachangwa</title>
-<link rel="stylesheet" href="/assets/admin-command.css">
+<link rel="stylesheet" href="/assets/admin-command.css?v=20260916-2">
 </head>
 <body>
 <section class="login" id="loginView">
@@ -89,7 +89,7 @@
           <div class="notice blue" style="margin-top:16px">Publishing creates a GitHub commit. Version History can restore an earlier page without deleting the record of what changed.</div>
           <div class="quick">
             <button class="quick-card" data-open-section="content"><b>Editorial control</b><span>Edit public wording and link destinations without touching page structure.</span></button>
-            <button class="quick-card" data-open-section="media"><b>Media command</b><span>Upload to Cloudinary, browse the persistent library and apply images to a selected target.</span></button>
+            <button class="quick-card" data-open-section="media"><b>Media command</b><span>Select a page image target, upload to Cloudinary, and the new image is applied automatically to the working copy.</span></button>
             <button class="quick-card" data-open-section="seo"><b>SEO & social</b><span>Control page titles, descriptions and social-sharing metadata.</span></button>
             <button class="quick-card" data-open-section="versions"><b>Recovery desk</b><span>Review recent GitHub versions and restore earlier public content safely.</span></button>
           </div>
@@ -123,12 +123,12 @@
       <div class="grid-2">
         <div class="panel"><div class="panel-head"><div><div class="eyebrow">Current page</div><h2>Image Targets</h2></div><span class="badge">Working copy</span></div><div class="items" id="imageEditor"></div></div>
         <div class="panel"><div class="panel-head"><div><div class="eyebrow">Secure upload</div><h2>Cloudinary Media</h2></div><button class="btn light" id="refreshMediaBtn">Refresh library</button></div>
-          <div class="field"><label for="mediaTarget">Apply media to</label><select id="mediaTarget"><option value="0">Image 1</option></select></div>
-          <div class="drop" id="dropzone" style="margin-top:14px"><p><strong>Drop an image here or choose a file</strong></p><label class="btn gold" for="uploadInput">Choose image</label><input id="uploadInput" type="file" accept="image/*"><img id="uploadPreview" class="upload-preview hidden" alt="Selected upload preview"><div class="small" id="uploadMeta" style="margin-top:8px"></div><button class="btn hidden" id="cloudUploadBtn" style="margin-top:10px">Upload securely</button><div class="msg" id="uploadMessage"></div></div>
+          <div class="field"><label for="mediaTarget">Image to replace automatically</label><select id="mediaTarget"><option value="0">Image 1</option></select></div>
+          <div class="drop" id="dropzone" style="margin-top:14px"><p><strong>Choose the target above, then drop an image here or choose a file</strong></p><label class="btn gold" for="uploadInput">Choose image</label><input id="uploadInput" type="file" accept="image/*"><img id="uploadPreview" class="upload-preview hidden" alt="Selected upload preview"><div class="small" id="uploadMeta" style="margin-top:8px"></div><button class="btn hidden" id="cloudUploadBtn" style="margin-top:10px">Upload & apply</button><div class="msg" id="uploadMessage"></div></div>
           <div class="msg" id="mediaMessage"></div>
         </div>
       </div>
-      <div class="panel"><div class="panel-head"><div><div class="eyebrow">Persistent media library</div><h2>Portfolio Assets</h2><p class="small">Images stored in Cloudinary are visible across authorized devices, not only this browser.</p></div><span class="badge ok">Cloud storage</span></div><div class="media-grid" id="mediaLibrary"></div></div>
+      <div class="panel"><div class="panel-head"><div><div class="eyebrow">Persistent media library</div><h2>Portfolio Assets</h2><p class="small">Images stored in Cloudinary are visible across authorized devices. Newly uploaded images appear here immediately while Cloudinary finishes indexing them.</p></div><span class="badge ok">Cloud storage</span></div><div class="media-grid" id="mediaLibrary"></div></div>
     </section>
 
     <section class="section" id="section-preview"><div class="panel"><div class="panel-head"><div><div class="eyebrow">Approval desk</div><h2>Live Preview</h2><p class="small">This preview uses the complete working HTML, including the portfolio's public styles and assets.</p></div><button class="btn light" id="refreshPreview">Refresh preview</button></div><iframe class="preview-frame" id="previewFrame" title="Portfolio working preview" sandbox="allow-scripts allow-same-origin allow-popups"></iframe></div></section>
@@ -154,6 +154,6 @@
     <div class="msg" id="globalMessage"></div>
   </main>
 </div>
-<script type="module" src="/assets/admin-command.js"></script>
+<script type="module" src="/assets/admin-command.js?v=20260916-2"></script>
 </body>
 </html>
