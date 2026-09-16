@@ -17,7 +17,8 @@
     document.querySelectorAll('[data-nav]').forEach(function(nav){
       ensureNavLink(nav,'/projects.html','Projects','/engagements.html');
       var path=(location.pathname||'/').replace(/\/$/,'')||'/';
-      nav.querySelectorAll('a[href]').forEach(function(a){var href=(a.getAttribute('href')||'').replace(/\/$/,'')||'/';a.classList.toggle('active',href===path)});
+      var projectCase=path.indexOf('/case-study-')===0;
+      nav.querySelectorAll('a[href]').forEach(function(a){var href=(a.getAttribute('href')||'').replace(/\/$/,'')||'/';a.classList.toggle('active',href===path||(projectCase&&href==='/projects.html'))});
     });
   }
 
