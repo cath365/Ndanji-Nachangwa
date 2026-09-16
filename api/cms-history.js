@@ -8,6 +8,12 @@ const PAGE_MAP = {
   experience: 'experience.html',
   impact: 'impact.html',
   engagements: 'engagements.html',
+  projects: 'projects.html',
+  speaking: 'speaking.html',
+  recommendations: 'recommendations.html',
+  northmead: 'case-study-northmead.html',
+  technovation: 'case-study-technovation.html',
+  remp: 'case-study-remp.html',
   insights: 'insights.html',
   education: 'education.html',
   contact: 'contact.html'
