@@ -72,6 +72,36 @@
       "headers": [
         { "key": "Cache-Control", "value": "no-store, max-age=0, must-revalidate" }
       ]
+    },
+    {
+      "source": "/assets/professional-admin.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/assets/diplomatic.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/assets/premium-polish.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/assets/professional-suite.css",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/assets/portfolio-config.json",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, max-age=0, must-revalidate" }
+      ]
     }
   ]
 }
