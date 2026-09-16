@@ -1,5 +1,5 @@
-import { uploadImageToCloudinary } from '/assets/cloudinary-upload.js';
-import { changeAdminPassword, currentAdminUser, resetAdminPassword, signInAdmin, signOutAdmin } from '/assets/firebase-admin.js';
+import { uploadImageToCloudinary } from '/assets/cloudinary-upload.js?v=20260916-2';
+import { changeAdminPassword, currentAdminUser, resetAdminPassword, signInAdmin, signOutAdmin } from '/assets/firebase-admin.js?v=20260916-2';
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -228,10 +228,13 @@ function renderImages() {
   if (!images.length) host.innerHTML = '<div class="notice">No standard &lt;img&gt; elements were found. Special artwork can still be managed in Advanced HTML.</div>';
 }
 function applyMediaToImage(url, index = selectedImageIndex) {
-  if (!doc) return;
+  if (!doc) return false;
   const images = [...doc.querySelectorAll('img')];
   const img = images[index];
-  if (!img) return setMsg(globalMessage, 'Choose a valid image target first.', 'error');
+  if (!img) {
+    setMsg(globalMessage, 'Choose a valid image target first.', 'error');
+    return false;
+  }
   img.setAttribute('src', url);
   img.removeAttribute('srcset');
   selectedImageIndex = index;
@@ -239,6 +242,7 @@ function applyMediaToImage(url, index = selectedImageIndex) {
   renderImages();
   refreshPreview();
   setMsg(globalMessage, `Image ${index + 1} updated in the working copy. Publish when ready.`, 'ok');
+  return true;
 }
 function renderSeo() {
   if (!doc) return;
@@ -369,16 +373,26 @@ function localMedia() {
 function saveLocalMedia(items) {
   localStorage.setItem(MEDIA_KEY, JSON.stringify(items.slice(0, 50)));
 }
+function mergeMediaItems(...groups) {
+  const map = new Map();
+  groups.flat().filter(Boolean).forEach((item) => {
+    const key = item.publicId || item.secureUrl;
+    if (!key || map.has(key)) return;
+    map.set(key, item);
+  });
+  return [...map.values()].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+}
 async function loadMediaLibrary() {
   const host = $('#mediaLibrary');
   host.innerHTML = '<div class="small">Loading Cloudinary media…</div>';
-  let items = [];
+  let items = localMedia();
   try {
     const response = await fetch('/api/media-library?limit=60', { cache: 'no-store' });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Unable to load media');
-    items = data.items || [];
+    items = mergeMediaItems(data.items || [], localMedia());
     setHealth('cloudinary', 'good', `${items.length} media items available`);
+    setMsg($('#mediaMessage'), '');
   } catch (error) {
     items = localMedia();
     setHealth('cloudinary', 'warn', 'Using local upload history');
@@ -422,12 +436,25 @@ async function uploadSelectedImage() {
   setMsg($('#uploadMessage'), 'Uploading securely to Cloudinary…');
   try {
     const result = await uploadImageToCloudinary(selectedUpload);
-    const local = localMedia();
-    local.unshift({ ...result, createdAt: new Date().toISOString() });
+    const local = mergeMediaItems([result], localMedia());
     saveLocalMedia(local);
-    setMsg($('#uploadMessage'), 'Upload complete. Select a page image target and apply it, then publish.', 'ok');
+
+    renderMediaLibrary(local);
+    const applied = applyMediaToImage(result.secureUrl, selectedImageIndex);
+
     selectedUpload = null;
+    $('#uploadInput').value = '';
+    $('#uploadPreview').removeAttribute('src');
+    $('#uploadPreview').classList.add('hidden');
+    $('#uploadMeta').textContent = '';
     button.classList.add('hidden');
+
+    if (applied) {
+      setMsg($('#uploadMessage'), `Upload complete and automatically applied to Image ${selectedImageIndex + 1}. Check Preview, then press Publish Changes to make it public.`, 'ok');
+    } else {
+      setMsg($('#uploadMessage'), 'Upload complete and saved in the Media Library. This page has no standard image target, so choose or create an image target before publishing.', 'warn');
+    }
+
     await loadMediaLibrary();
   } catch (error) {
     setMsg($('#uploadMessage'), error.message, 'error');
