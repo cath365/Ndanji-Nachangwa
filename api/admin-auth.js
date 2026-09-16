@@ -1,8 +1,9 @@
 import { clearSessionCookie, createSessionToken, isAdminRequest, safePasswordEqual, sessionCookie } from './_admin-session.js';
 
-// Firebase Web API keys are public client identifiers. Keep this aligned with
-// the Firebase web app used by the portfolio admin.
-const FIREBASE_WEB_API_KEY = 'AIzaSyC21iURx8rnfn2BY1CY73gUCXOMux7FMfM';
+// Firebase Web API keys are public client identifiers, but keeping the key in
+// Vercel makes the project portable and avoids coupling the code to one Firebase
+// project. Configure FIREBASE_API_KEY in Vercel Environment Variables.
+const FIREBASE_WEB_API_KEY = String(process.env.FIREBASE_API_KEY || '').trim();
 const FIREBASE_AUTH_BASE = 'https://identitytoolkit.googleapis.com/v1';
 
 function adminEmail() {
@@ -23,6 +24,12 @@ function friendlyFirebaseError(code) {
 }
 
 async function firebasePost(endpoint, body, timeoutMs = 12000) {
+  if (!FIREBASE_WEB_API_KEY) {
+    const configError = new Error('FIREBASE_API_KEY is not configured for this deployment.');
+    configError.status = 500;
+    throw configError;
+  }
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -129,8 +136,7 @@ export default async function handler(req, res) {
 
   // Preferred path: the browser sends email/password only to this HTTPS API.
   // Vercel performs the Firebase request server-side and immediately issues the
-  // secure HttpOnly CMS session cookie. This removes the previous two-step login
-  // that could leave the browser sitting on “Authenticating…”.
+  // secure HttpOnly CMS session cookie.
   if (typeof req.body?.email === 'string' && typeof req.body?.password === 'string') {
     try {
       await firebasePasswordLogin(req.body.email, req.body.password);
