@@ -1,5 +1,5 @@
 async function getUploadConfig(){
-  const s=await fetch('/api/cloudinary-sign',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+  const s=await fetch('/api/cloudinary-sign',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',cache:'no-store'});
   if(!s.ok)throw new Error('Unable to prepare Cloudinary upload: '+await s.text());
   return s.json();
 }
@@ -8,7 +8,7 @@ async function signedUpload(file,resourceType='image'){
   const c=await getUploadConfig(),f=new FormData();
   f.append('file',file);f.append('api_key',c.apiKey);f.append('timestamp',String(c.timestamp));f.append('folder',c.folder);f.append('overwrite',String(c.overwrite));f.append('signature',c.signature);
   const endpoint=resourceType==='image'?'image':'auto';
-  const r=await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(c.cloudName)}/${endpoint}/upload`,{method:'POST',body:f});
+  const r=await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(c.cloudName)}/${endpoint}/upload`,{method:'POST',body:f,cache:'no-store'});
   if(!r.ok)throw new Error('Cloudinary upload failed: '+await r.text());
   const x=await r.json();
   return{publicId:x.public_id,secureUrl:x.secure_url,width:x.width||null,height:x.height||null,duration:x.duration||null,format:x.format||'',bytes:x.bytes||file.size,resourceType:x.resource_type||resourceType,mimeType:file.type||'',originalName:file.name||'',createdAt:x.created_at||new Date().toISOString()};
@@ -38,10 +38,11 @@ if(typeof window!=='undefined'){
   window.__ndanjiUploadAsset=uploadAssetToCloudinary;
   const path=(window.location.pathname||'').toLowerCase();
   if(path.endsWith('/admin.html')||path==='/admin'){
-    import('/assets/login-hotfix.js?v=4').catch(()=>{});
-    import('/assets/section-builder.js?v=3').catch(()=>{});
-    import('/assets/work-gallery-admin.js?v=1').catch(()=>{});
-    import('/assets/admin-power-safe.js?v=1').catch(()=>{});
-    import('/assets/admin-extras.js?v=1').catch(()=>{});
+    const v='20260916-2';
+    import(`/assets/login-hotfix.js?v=${v}`).catch(()=>{});
+    import(`/assets/section-builder.js?v=${v}`).catch(()=>{});
+    import(`/assets/work-gallery-admin.js?v=${v}`).catch(()=>{});
+    import(`/assets/admin-power-safe.js?v=${v}`).catch(()=>{});
+    import(`/assets/admin-extras.js?v=${v}`).catch(()=>{});
   }
 }
