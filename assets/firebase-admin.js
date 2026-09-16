@@ -1,6 +1,28 @@
-const FIREBASE_WEB_API_KEY = 'AIzaSyC21iURx8rnfn2BY1CY73gUCXOMux7FMfM';
 const AUTH_BASE = 'https://identitytoolkit.googleapis.com/v1';
 const SESSION_KEY = 'ndanji-firebase-admin-session';
+let firebaseApiKeyPromise = null;
+
+async function getFirebaseApiKey() {
+  if (!firebaseApiKeyPromise) {
+    firebaseApiKeyPromise = fetch('/api/firebase-config', {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      cache: 'no-store'
+    })
+      .then(async (response) => {
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data?.apiKey) {
+          throw new Error(data?.error || 'Firebase is not configured for this deployment.');
+        }
+        return String(data.apiKey).trim();
+      })
+      .catch((error) => {
+        firebaseApiKeyPromise = null;
+        throw error;
+      });
+  }
+  return firebaseApiKeyPromise;
+}
 
 function friendlyFirebaseError(code) {
   const errors = {
@@ -18,10 +40,11 @@ function friendlyFirebaseError(code) {
 }
 
 async function firebaseRequest(endpoint, body, timeoutMs = 15000) {
+  const apiKey = await getFirebaseApiKey();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetch(`${AUTH_BASE}/${endpoint}?key=${encodeURIComponent(FIREBASE_WEB_API_KEY)}`, {
+    const response = await fetch(`${AUTH_BASE}/${endpoint}?key=${encodeURIComponent(apiKey)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -98,7 +121,6 @@ export async function changeAdminPassword(currentPassword, newPassword) {
   if (!currentPassword) throw new Error('Enter your current password.');
   if (!newPassword || newPassword.length < 8) throw new Error('Use at least 8 characters for the new password.');
 
-  // Re-authenticate with the current password first.
   const signedIn = await firebaseRequest('accounts:signInWithPassword', {
     email: existing.email,
     password: currentPassword,
