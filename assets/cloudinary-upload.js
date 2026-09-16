@@ -38,11 +38,12 @@ if(typeof window!=='undefined'){
   window.__ndanjiUploadAsset=uploadAssetToCloudinary;
   const path=(window.location.pathname||'').toLowerCase();
   if(path.endsWith('/admin.html')||path==='/admin'){
-    const v='20260916-2';
+    const v='20260916-3';
     import(`/assets/login-hotfix.js?v=${v}`).catch(()=>{});
     import(`/assets/section-builder.js?v=${v}`).catch(()=>{});
     import(`/assets/work-gallery-admin.js?v=${v}`).catch(()=>{});
     import(`/assets/admin-power-safe.js?v=${v}`).catch(()=>{});
     import(`/assets/admin-extras.js?v=${v}`).catch(()=>{});
+    import(`/assets/professional-admin.js?v=${v}`).catch(()=>{});
   }
 }
