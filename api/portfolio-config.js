@@ -23,12 +23,19 @@ function cleanHttps(value, { linkedin = false } = {}) {
   return url.toString();
 }
 
+function cleanPublicAssetUrl(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  if (/^\/assets\/[A-Za-z0-9._~!$&'()*+,;=:@%/?-]+$/i.test(raw)) return raw;
+  return cleanHttps(raw);
+}
+
 function normalise(input = {}) {
   const availability = String(input.availability || '').trim().slice(0, 240);
   const cvLabel = String(input.cvLabel || 'Download CV').trim().slice(0, 60) || 'Download CV';
   return {
     linkedinUrl: cleanHttps(input.linkedinUrl, { linkedin: true }),
-    cvUrl: cleanHttps(input.cvUrl),
+    cvUrl: cleanPublicAssetUrl(input.cvUrl),
     cvLabel,
     availability,
     email: String(input.email || 'ndanjizoe@gmail.com').trim().slice(0, 160),
